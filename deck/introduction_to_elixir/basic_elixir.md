@@ -613,6 +613,6 @@ There you have it - nice documentation output for your modules!
 # Summary
 
 # Summary
-So this was a brief but relatively thorough initial introduction to Elixir as a
+So this was a brief but relatively thorough basic introduction to Elixir as a
 programming language.  We covered syntax and tooling.  In the next section,
-we're going to cover OTP.
+we're going to cover testing.
