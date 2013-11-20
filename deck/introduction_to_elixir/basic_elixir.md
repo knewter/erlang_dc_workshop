@@ -264,14 +264,11 @@ end
 
 # Functions
 In Elixir, functions are first class types.  This shouldn't be terribly
-surprising; it *is* a functional programming language, after all.  Today, we'll
-have a look at:
+surprising; it *is* a functional programming language, after all.  Let's look at:
 
 - Defining Anonymous Functions
 - Calling Anonymous Functions
 - Using Functions as first class types
-
-Let's get started.
 
 # Defining Anonymous Functions
 Anonymous functions are defined with the `fn` keyword.  Let's see what that
@@ -402,6 +399,7 @@ Modules are the primary unit of code organization in Elixir.  They can contain
 functions, both private and public.
 
 In this section, we're going to cover:
+
 - Using mix to begin a new project
 - Defining a module
 - Compiling a module
