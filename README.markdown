@@ -3,6 +3,16 @@
 This is the code and text for a three hour elixir workshop on December 7, 2013
 in Washington, D.C. for the ErlangDC one day conference.
 
+## Running it
+To run this presentation, do the following:
+
+```
+bundle
+vimdeck deck/introduction_to_elixir/basic_elixir.md
+```
+
+## Outline
+
 Since it's a comically long talk, it's broken up into the following sections:
 
 - Introduction to Elixir
@@ -54,3 +64,4 @@ Since it's a comically long talk, it's broken up into the following sections:
     - Adding Persistent State (let it crash...but don't forget stuff)
 - Building a project with Elixir
   - Unsure what project I need to do here...figure it out
+

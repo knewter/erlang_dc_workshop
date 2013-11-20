@@ -1,6 +1,10 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    artii (2.0.3)
+    asciiart (0.0.6)
+      rainbow
+      rmagick
     coderay (1.1.0)
     daemons (1.1.9)
     deckrb (0.5.2)
@@ -25,7 +29,9 @@ GEM
     rack-codehighlighter (0.5.0)
       nokogiri (>= 1.4.1)
       rack (>= 1.0.0)
+    rainbow (1.1.4)
     redcarpet (2.3.0)
+    rmagick (2.13.2)
     thin (1.6.1)
       daemons (>= 1.0.9)
       eventmachine (>= 1.0.0)
@@ -34,9 +40,14 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     trollop (2.0)
+    vimdeck (0.1.7)
+      artii
+      asciiart
+      redcarpet
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   deckrb
+  vimdeck
