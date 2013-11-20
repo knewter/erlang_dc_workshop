@@ -34,15 +34,6 @@ and should fake, or 'mock' any collaborators out, so that a single portion of
 the system can be verified on its own.
 
 
-## Unit Testing
-- ExUnit
-- Defining Tests
-- Assertions
-- Examples / live coding
-- Exercism.io - just a plug
-- Doctests - ZOMG
-
-
 ## ExUnit
 Elixir comes with a built in tool for writing unit tests, called `ExUnit`.  An
 ExUnit test case is just a module that uses `ExUnit.Case`.  We'll build a test
