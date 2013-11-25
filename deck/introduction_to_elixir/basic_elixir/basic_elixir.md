@@ -126,14 +126,10 @@ serve the same purpose as hashes in Ruby.
 
 ```elixir
 [author: "Josh Adams", title: "Basic Elixir"]
-```
 
-.note this line is ignored
+# That's just converted into an array of 2-element tuples, so that's the same as
+# the following:
 
-That's just converted into an array of 2-element tuples, so that's the same as
-the following:
-
-```elixir
 [{:author, "Josh Adams"}, {:title, "Basic Elixir"}]
 ```
 
