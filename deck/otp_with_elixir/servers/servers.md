@@ -1,3 +1,26 @@
+# GenServer
+## Josh Adams
+
+![](https://pbs.twimg.com/profile_images/2284174758/v65oai7fxn47qv9nectx.png)
+
+@knewter
+
+
+# GenServer
+## Josh Adams
+![](https://github.global.ssl.fastly.net/images/modules/logos_page/GitHub-Mark.png)
+
+knewter
+
+
+# GenServer
+## Josh Adams
+[twitters] - @knewter
+[githubs]  - /knewter
+[work]     - http://isotope11.com
+[videos]   - http://elixirsips.com
+
+
 # GenServer.Behaviour
 Implementing a simple server to manage some state using GenServer.Behaviour.
 

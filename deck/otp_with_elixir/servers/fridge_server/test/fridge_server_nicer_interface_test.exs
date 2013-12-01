@@ -2,7 +2,7 @@ defmodule FridgeServerNicerInterfaceTest do
   use ExUnit.Case
 
   setup do
-    { :ok, fridge } = FridgeServer.Server.start_link
+    { :ok, fridge } = FridgeServer.Server.start
     { :ok, [ server: fridge ] }
   end
 
