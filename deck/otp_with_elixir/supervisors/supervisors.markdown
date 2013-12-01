@@ -15,6 +15,7 @@ knewter
 
 # Supervisors
 ## Josh Adams
+
 [twitters] - @knewter
 [githubs]  - /knewter
 [work]     - http://isotope11.com
@@ -31,6 +32,7 @@ happens.
 The way you manage this is by designing your system composed of multiple
 processes, managed by supervisors.
 
+
 ## Supervisors
 
 A supervisor exists to manage processes or other supervisors.  There are various
@@ -40,7 +42,7 @@ there are ways to handle repeated failures of supervised processes.
 Let's look at a project to supervise a ListServer so that it can live through a
 crash.
 
-```
+```sh
 mix new supervised_list_server
 cd supervised_list_server
 ```
