@@ -210,4 +210,193 @@ state if he crashes, but that's impossible since it's stored in the process.
 The solution to this is to store the actual important bits of state in an
 external process and make sure it does very little, so that it cannot crash.
 
+## Supervisors and Persistent State
 
+In order to persist the data, and to make sure all of these processes start
+together as they should, we're going to build a slightly more complex
+supervision tree.  I learned how this should work from Dave Thomas' book, by the
+way.  Let's go ahead and have a look at what it'll look like.
+
+![Supervision Tree](supervision_tree.png)
+
+Here, you can see we're going to have a top level supervisor, who starts a
+process to store the ListData in, and supervises a SubSupervisor, who's
+responsible for the ListServer itself.  The ListServer will get access to the
+ListData pid on initialization, and he'll ask ListData for the data every time
+he needs to access it.  This way, when ListServer crashes, his data's safe and
+sound.
+
+## Implementation
+
+Alright, now that we know what we're trying to do, let's implement it.  Open up
+`lib/list_supervisor.ex` and make it look like the following:
+
+```elixir
+defmodule ListSupervisor do
+  use Supervisor.Behaviour
+
+  def start_link do
+    result = {:ok, sup} = :supervisor.start_link(__MODULE__, [])
+    start_workers(sup)
+    result
+  end
+
+  def start_workers(sup) do
+    # Start the ListData worker
+    {:ok, list_data} = :supervisor.start_child(sup, worker(ListData, []))
+
+    # Now start the SubSupervisor for the actual ListServer
+    :supervisor.start_child(sup, worker(ListSubSupervisor, [list_data]))
+  end
+
+  def init(_) do
+    supervise [], strategy: :one_for_one
+  end
+end
+```
+
+Here, we need to get the pid of the ListData worker, and pass that on to the
+ListSubSupervisor, so we had to manage stating the children of the supervisor
+ourselves, rather than allowing the call to `supervise` to handle it for us.
+Let's see what ListData is going to look like.  Open up `lib/list_data.ex`:
+
+```elixir
+defmodule ListData do
+  use GenServer.Behaviour
+
+  # Public API
+  def start_link do
+    :gen_server.start_link(__MODULE__, [], [])
+  end
+
+  def save_state(pid, state) do
+    :gen_server.cast pid, {:save_state, state}
+  end
+
+  def get_state(pid) do
+    :gen_server.call pid, :get_state
+  end
+
+  # GenServer API
+  def init(list) do
+    {:ok, list}
+  end
+
+  def handle_call(:get_state, _from, current_state) do
+    {:reply, current_state, current_state}
+  end
+
+  def handle_cast({:save_state, new_state}, _current_state) do
+    {:noreply, new_state}
+  end
+end
+```
+
+This is an extremely generic server that could be used for storing any arbitrary
+value and replacing it.  It'll work fine for our needs.  Let's move on to the
+ListSubSupervisor.  Open up `lib/list_sub_supervisor.ex`:
+
+```elixir
+defmodule ListSubSupervisor do
+  use Supervisor.Behaviour
+
+  def start_link(list_data_pid) do
+    :supervisor.start_link(__MODULE__, list_data_pid)
+  end
+
+  def init(list_data_pid) do
+    child_processes = [ worker(ListServer, [list_data_pid]) ]
+    supervise child_processes, strategy: :one_for_one
+  end
+end
+```
+
+This is extremely basic - it just tracks the list data pid, and passes it in to
+the ListServer when it restarts it.  Now we just need to modify the ListServer
+to both grab its state from the ListData server and to store it there when it
+crashes.  Open up `lib/list_server.ex`:
+
+```elixir
+defmodule ListServer do
+  use GenServer.Behaviour
+
+  ### Public API
+  def start_link(list_data_pid) do
+    :gen_server.start_link({:local, :list}, __MODULE__, list_data_pid, [])
+  end
+
+  def clear do
+    :gen_server.cast :list, :clear
+  end
+
+  def add(item) do
+    :gen_server.cast :list, {:add, item}
+  end
+
+  def remove(item) do
+    :gen_server.cast :list, {:remove, item}
+  end
+
+  def items do
+    :gen_server.call :list, :items
+  end
+
+  def crash do
+    :gen_server.cast :list, :crash
+  end
+
+  ### GenServer API
+  def init(list_data_pid) do
+    list = ListData.get_state(list_data_pid)
+    {:ok, {list, list_data_pid}}
+  end
+
+  # Clear the list
+  def handle_cast(:clear, {list, list_data_pid}) do
+    {:noreply, {[], list_data_pid}}
+  end
+  def handle_cast({:add, item}, {list, list_data_pid}) do
+    {:noreply, {list ++ [item], list_data_pid}}
+  end
+  def handle_cast({:remove, item}, {list, list_data_pid}) do
+    {:noreply, {List.delete(list, item), list_data_pid}}
+  end
+  def handle_cast(:crash, _state) do
+    1 = 2
+  end
+
+  def handle_call(:items, _from, {list, list_data_pid}) do
+    {:reply, list, {list, list_data_pid}}
+  end
+
+  # Handle termination
+  def terminate(_reason, {list, list_data_pid}) do
+    ListData.save_state list_data_pid, list
+  end
+end
+```
+
+So we had to tweak quite a few things, just to make sure we tracked the
+`list_data_pid` throughout the server, but other than that it was very minimal
+w/r/t changes.  Now let's see if we keep our state after a crash!  Run `iex -S
+mix`
+
+```elixir
+ListSupervisor.start_link
+ListServer.add "book"
+ListServer.items
+ListServer.add "cane"
+ListServer.items
+ListServer.remove "cane"
+ListServer.items
+ListServer.crash
+ListServer.items
+```
+
+And that's it!  We retained state beyond a crash.  This is the power of
+supervision trees!
+
+
+## Fin
+
+That's it for this section on Supervisors...
