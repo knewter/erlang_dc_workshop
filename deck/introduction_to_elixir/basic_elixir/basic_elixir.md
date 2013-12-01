@@ -271,7 +271,7 @@ Pattern matching is used to choose between multiple possible definitions of a
 function.  As an example, I'll define a silly function:
 
 ```elixir
-print_name_egotistically = fn 
+print_name_egotistically = fn
   :josh -> "Your name is Josh!"
   _     -> "I don't care what your name is!"
 end
@@ -679,7 +679,7 @@ defmodule ModulesExample.Mixfile do
   ...
   defp deps do
     [
-      { :ex_doc, github: "elixir-lang/ex_doc" } 
+      { :ex_doc, github: "elixir-lang/ex_doc" }
     ]
   end
 end
