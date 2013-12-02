@@ -7,8 +7,10 @@ in Washington, D.C. for the ErlangDC one day conference.
 To run this presentation, do the following:
 
 ```
-bundle
-vimdeck deck/introduction_to_elixir/basic_elixir.md
+bundle # Then make sure you've done a `git submodule init; git submodule update` in the reveal-ck gem
+cd reveal_deck/introduction_to_elixir/basic_elixir/
+reveal-ck generate
+servedir # this is an alias I have that just does `ruby -run -e httpd . -p 9091` to serve current dir files on port 9091
 ```
 
 ## Outline
