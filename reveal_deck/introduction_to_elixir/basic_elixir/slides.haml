@@ -1,0 +1,115 @@
+%section
+  %h1 Introduction to Elixir
+%section
+  %h1 Three hours; Three Parts
+  %ul
+    %li.fragment Basic Elixir
+    %li.fragment OTP with Elixir
+    %li.fragment Building a Project
+%section
+  %h1 Introduction to Elixir
+  %ul
+    %li.fragment Basic Elixir
+    %li.fragment Testing
+    %li.fragment Slightly Less Basic Elixir
+%section
+  %section
+    %h1 Introduction to Elixir
+    %h2 Basic Elixir
+    %ul
+      %li.fragment Data Types
+      %li.fragment Pattern Matching
+      %li.fragment Functions
+      %li.fragment Mix and Modules
+  %section
+    %h1 Basic Elixir
+    %h2 Data Types
+    %ul
+      %li.fragment Atoms
+      %li.fragment Numbers
+      %li.fragment Lists
+      %li.fragment Tuples
+      %li.fragment Keyword Lists
+      %li.fragment Regular Expressions
+      %li.fragment Booleans
+  %section
+    %h1 Data Types
+    %h2 Atoms
+    %p
+      Atoms are just like symbols in Ruby.  They consist of a colon, followed
+      by letters, digits, and underscores
+    %pre
+      %code
+        :preserve
+          :foo
+          :bar
+          :"some string"
+          :certain_@symbols_are_ok_too
+    %aside.notes
+      :markdown
+        Please forgive the syntax highlighting on this slide, the funky atoms are basically exactly the sort of thing my in-browser highlighter has trouble with.
+
+        In Elixir and Erlang, atoms are used frequently to tag response types.  You'll
+        often see them as the first element in a tuple, used as a response type.  We'll
+        see tuples a little later.
+  %section
+    %h1 Data Types
+    %h2 Numbers - Integers
+    %pre.fragment
+      %code
+        :preserve
+          1234567
+          1_234_567
+          1_234_567 == 1234567 # You can use underscores to make numbers easier to read
+          12 + 24 # 36
+          19 - 100 # -81
+    %aside.notes
+      :markdown
+        Integers can be written in various ways.  Let's see a few:
+
+        In Elixir, there's no limit on how large an integer can be.  You can do normal sorts of things with these integers:
+  %section
+    %h1 Data Types
+    %h2 Numbers - Floating Points
+    %pre.fragment
+      %code
+        :preserve
+          1.23
+          350.72
+          .25 #=> (SyntaxError) iex:1: syntax error before: '.'
+    %aside.notes
+      :markdown
+        Floating point numbers have a decimal point.
+
+        Notice that there must be a number on both sides of the decimal in order to have a valid floating point number.
+  %section
+    %h1 Data Types
+    %h2 Lists
+    %p Lists look like arrays in other languages.
+    %pre.fragment
+      %code
+        :preserve
+          [1,2,3]
+          [:foo, :bar]
+          [:also, [:they, :can], [:contain, :lists]]
+    %p.fragment
+      They're actually just implemented as linked lists.
+    %p.fragment
+      You can get their head (hd) and tail (tl).
+    %pre.fragment
+      %code
+        :preserve
+          a = [1, 2, 3]
+          hd(a) # 1
+          tl(a) # [2, 3]
+    %aside.notes
+      :markdown
+        Lists look like arrays in other languages, although they have different
+        semantics.  Writing a list is easy:
+
+        Due to the way they're implemented, the easiest thing to do with a list is to
+        get its head or its tail - that is, the first element in the list, or all the
+        remaining elements in a list.  This is because they are actually just linked
+        lists.
+
+        There are a couple of built in functions for accessing the head and tail of a list.  `hd` and `tl`.
