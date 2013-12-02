@@ -1,1 +1,1 @@
-rvm 2.0.0@erlang_dc_workshop --create
+rvm 2.0.0-p247@erlang_dc_workshop --create

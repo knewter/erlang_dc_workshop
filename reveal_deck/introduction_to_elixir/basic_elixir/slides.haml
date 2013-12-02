@@ -485,3 +485,79 @@
       :markdown
         You can also write functions that take other functions as arguments.  For
         example: [advance]
+%section
+  %section
+    %h1 Basic Elixir
+    %h2 Mix and Modules
+    %ul
+      %li.fragment Using mix to begin a new project
+      %li.fragment Defining a module
+      %li.fragment Compiling a module
+      %li.fragment Module definitions have return values
+      %li.fragment Documenting a Module
+      %li.fragment Generating documentation output using ExDoc
+    %aside.notes
+      :markdown
+        Modules are the primary unit of code organization in Elixir.  They can contain
+        functions, both private and public.
+
+        In this section, we're going to cover: [advance a bunch]
+  %section
+    %h1 Mix and Modules
+    %h2 Using mix to begin a new project
+    %pre.fragment
+      %code
+        :preserve
+          $ mix new modules_example
+          $ tree modules_example/
+          modules_example/
+          ├── lib
+          │   ├── modules_example
+          │   │   └── supervisor.ex
+          │   └── modules_example.ex
+          ├── mix.exs
+          ├── README.md
+          └── test
+              ├── modules_example_test.exs
+              └── test_helper.exs
+
+          3 directories, 6 files
+    %aside.notes
+      :markdown
+        Elixir ships with a tool called `mix` that is used for creating, compiling, and
+        testing Elixir projects.  To use `mix` to start a new project, use `mix new
+        projectname` [advance]
+
+        This will generate a few files for you.  You end up with `lib` and `test`
+        directories, and a few project files. Let's go ahead and look at the `mix.exs`
+        file that was generated.
+  %section
+    %h1 Mix and Modules
+    %h2 Using mix to begin a new project (cont)
+    %pre
+      %code
+        :preserve
+          defmodule ModulesExample.Mixfile do
+            use Mix.Project
+
+            def project do
+              [ app: :modules_example,
+                version: "0.0.1",
+                elixir: "~> 0.10.2-dev",
+                deps: deps ]
+            end
+
+            # Configuration for the OTP application
+            def application do
+              []
+            end
+
+            # Returns the list of dependencies in the format:
+            # { :foobar, "~> 0.1", git: "https://github.com/elixir-lang/foobar.git" }
+            defp deps do
+              []
+            end
+          end
+    %aside.notes
+      :markdown
+        I just wanted to show you a mixfile for now, let's go ahead and move on. [advance]
