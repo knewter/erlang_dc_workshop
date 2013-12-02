@@ -111,3 +111,11 @@ TODO: This section
 
 ## Pipe Operator
 TODO: This section
+
+
+## Resources
+
+- [Elixir Koans](https://github.com/dojo-toulouse/elixir-koans)
+- Etudes for Elixir
+  - [Book](http://chimera.labs.oreilly.com/books/1234000001642)
+  - [Code](https://github.com/oreillymedia/etudes-for-elixir)
