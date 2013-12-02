@@ -97,3 +97,17 @@ We're going to pull that up and see about making the tests pass:
 
 ## Summary
 Zomg that's it for the first section guys.
+
+
+## Records
+TODO: This section
+TODO: Show how to pattern match on a record with a particular value...not sure
+how to do that in elixir yet.
+
+
+## Processes
+TODO: This section
+
+
+## Pipe Operator
+TODO: This section
