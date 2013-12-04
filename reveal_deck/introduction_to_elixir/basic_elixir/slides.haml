@@ -1,17 +1,72 @@
 %section
   %h1 Introduction to Elixir
+  %h2 Josh Adams
+  %ul
+    %li
+      Github:
+      %a{href: "http://github.com/knewter"} knewter
+    %li
+      The Twitters:
+      %a{href: "http://twitter.com/knewter"} @knewter
+    %li
+      Work:
+      %a{href: "http://isotope11.com"} isotope11.com
+    %li
+      Videos:
+      %a{href: "http://elixirsips.com"} elixirsips.com
+  %aside.notes
+    :markdown
+      Hey everybody, welcome to the longest talk of my life.  By way of introduction,
+      I'm Josh Adams.
+
+      I'm on github as knewter.
+
+      I'm on the twitters as knewter.
+
+      I'm the CTO of a software development shop known as Isotope11 - we build stuff
+      mostly in Ruby and JavaScript for various people - government agencies, startups,
+      marketing firms, insurance agencies - we're not picky.
+
+      I also run a screencast series in which I teach people Elixir as I learn it, which
+      is in fact the reason I'm standing up here today.  If you all subscribed I'd be
+      delighted and maybe I'd stop losing money doing it :) You can find it at
+      elixirsips.com [advance]
+
 %section
   %h1 Three hours; Three Parts
   %ul
     %li.fragment Introduction to Elixir
     %li.fragment OTP with Elixir
     %li.fragment Building a Project
+  %aside.notes
+    :markdown
+      This workshop is three hours long, and I've tried to break it up into three evenly
+      sized parts: [advance]
+
+      - Introduction to Elixir [advance]
+      - OTP with Elixir [advance]
+      - Building a Project
+
+      Let's go ahead and get started. [advance]
+
 %section
   %h1 Introduction to Elixir
   %ul
     %li.fragment Basic Elixir
     %li.fragment Testing
     %li.fragment Slightly Less Basic Elixir
+
+  %aside.notes
+    :markdown
+      The Introduction to Elixir is broken into three parts as well: [advance]
+
+      - Basic Elixir, in which we talk about syntax, tooling, real basic stuff [advance]
+      - Testing, in which I introduce you to what's out there in the testing arena [advance]
+      - and Slightly Less Basic Elixir, in which we cover some stuff that didn't make the cut
+        for what I'd call "Basic"
+
+      Let's go ahead and start out with the Basic Elixir [advance]
+
 %section
   %h1 Introduction to Elixir
   %h2 Basic Elixir
@@ -20,6 +75,20 @@
     %li.fragment Pattern Matching
     %li.fragment Functions
     %li.fragment Mix and Modules
+
+  %aside.notes
+    :markdown
+      This slide, too, has bullet points :)  We're going to cover four sections: [advance]
+
+      - Data Types, in which we cover the raw primitives you'll deal with day to day [advance]
+      - Pattern Matching, in which I introduce you to how flow control is done - this
+        is one of the coolest things Elixir and Erlang offer. [advance]
+      - Functions, where we'll see how to define some functions and call them, and [advance]
+      - Mix and Modules, where you'll see the `mix` tool and we'll build a dummy module
+        to get our feet wet before moving onto projecty things.
+
+      With that introduction out of the way, let's move on to Basic Elixir [advance]
+
 %section
   %section
     %h1 Basic Elixir
@@ -33,6 +102,14 @@
       %li.fragment Keyword Lists
       %li.fragment Regular Expressions
       %li.fragment Booleans
+
+    %aside.notes
+      :markdown
+        We're going to speed through some data types here.  I won't call them all out because
+        we're all sick of bullet points right now, but here they all are, laid out:
+
+        [advance with the down arrow until this slide's gone]
+
   %section
     %h1 Data Types
     %h2 Atoms
@@ -48,23 +125,29 @@
           :certain_@symbols_are_ok_too
     %aside.notes
       :markdown
-        Please forgive the syntax highlighting on this slide, the funky atoms are basically exactly the sort of thing my in-browser highlighter has trouble with.
+        Atoms are just like symbols in Ruby.  They consist of a colon, followed
+        by letters, digits, and underscores.
 
-        In Elixir and Erlang, atoms are used frequently to tag response types.  You'll
+        Please forgive the syntax highlighting on this slide, the funky atoms are basically
+        exactly the sort of thing my in-browser highlighter has trouble with.
+
+        In Elixir and Erlang, atoms are used frequently to tag tuples.  You'll
         often see them as the first element in a tuple, used as a response type.  We'll
         see tuples a little later.
+
   %section
     %h1 Data Types
     %h2 Strings
     %pre
       %code
         :preserve
-          "foo" <> "bar" #=> foobar
+          "foo" <> "bar" #=> "foobar"
     %aside.notes
       :markdown
         Strings in Elixir are Erlang binaries.  They are surrounded by double quotes.
         Here I'm just showing basic string concatenation, to give you a feel for what
         that looks like.
+
   %section
     %h1 Data Types
     %h2 Numbers - Integers
@@ -76,15 +159,24 @@
           1_234_567 == 1234567 # You can use underscores to make numbers easier to read
           12 + 24 # 36
           19 - 100 # -81
+
     %aside.notes
       :markdown
         Integers can be written in various ways.  Let's see a few: [advance]
 
-        In Elixir, there's no limit on how large an integer can be.  You can do normal sorts of things with these integers:[advance]
+        One of the interesting things you can see here is that underscores are ignored - 
+        this is just like in Ruby.
+
+        You can do normal sorts of things with these integers - the adding, the subtracting,
+        etc.
+
+        Also of particular interest - in Elixir, there's no limit on how large an integer
+        can be. [advance]
+
   %section
     %h1 Data Types
     %h2 Numbers - Floating Points
-    %pre.fragment
+    %pre
       %code
         :preserve
           1.23
@@ -94,7 +186,9 @@
       :markdown
         Floating point numbers have a decimal point.
 
-        Notice that there must be a number on both sides of the decimal in order to have a valid floating point number.
+        Notice that there must be a number on both sides of the decimal in order to have
+        a valid floating point number. [advance]
+
   %section
     %h1 Data Types
     %h2 Lists
@@ -118,7 +212,8 @@
     %aside.notes
       :markdown
         Lists look like arrays in other languages, although they have different
-        semantics.  Writing a list is easy [advance]
+        semantics.  Writing a list is easy - just put some stuff in square brackets,
+        separated by commas. [advance]
 
         Due to the way they're implemented, the easiest thing to do with a list is to
         get its head or its tail - that is, the first element in the list, or all the
@@ -126,9 +221,13 @@
 
         This is because they are actually just linked lists. [advance]
 
-        There are a couple of built in functions for accessing the head and tail of a list.  `hd` and `tl`. [advance]
+        There are a couple of built in functions for accessing the head and tail of a list.
+        `hd` and `tl`. [advance]
+
+        You can see what those functions do here.
 
         If you want something more like arrays, then you want tuples. [advance]
+
   %section
     %h1 Data Types
     %h2 Tuples
@@ -142,8 +241,11 @@
       :markdown
         Tuples are ordered collections. [advance]
 
-        Tuples are used very frequently in Pattern Matching and in return values from
+        They look like curly braces surrounding items separated by commas.
+
+        Tuples are used very frequently in Pattern Matching and as return values from
         various functions (those two facts are not unrelated). [advance]
+
   %section
     %h1 Data Types
     %h2 Keyword Lists
@@ -168,7 +270,8 @@
 
         In Erlang, keyword lists don't exist as a first-level construct.  Elixir
         provides some syntactic sugar around some core Erlang types to provide
-        Keyword Lists.  These serve the same purpose as hashes in Ruby.
+        Keyword Lists. [advance]
+
   %section
     %h1 Data Types
     %h2 Regular Expressions
@@ -176,13 +279,18 @@
     %pre.fragment
       %code
         :preserve
-          Regex.replace %r/[aeiou]/, "Beginning Elixir", "z" # "Bzgznnzng Elzxzr"
+          Regex.replace %r/[aeiou]/, "Beginning Elixir", "z" #=> "Bzgznnzng Elzxzr"
     %aside.notes
       :markdown
         If you aren't familiar with Regular Expressions, think of them as a concise way
-        to write rules for pattern matching.  If you *are* familiar with Regexes, Elixir
-        has Perl Compatible Regular Expressions, so you can mostly use them like you're
-        used to:
+        to write rules for pattern matching a string.  If you *are* familiar with Regexes,
+        Elixir has Perl Compatible Regular Expressions, so you can mostly use them like you're
+        used to: [advance]
+
+        You use the 'r' sigil to build a regex (where sigil is just a concise word for
+        'bit of syntax that is a percent sign followed by some letter') - Ruby uses sigils
+        to great effect, and I'm glad to see them in Elixir. [advance]
+
   %section
     %h1 Data Types
     %h2 Booleans
@@ -191,10 +299,14 @@
         :preserve
           false = :false
           true = :true
+          nil = :nil
     %aside.notes
       :markdown
         In Elixir, everything but `false` or `nil` is truthy.  `false` and `nil` are
         both shorthands for the atoms with the same name - namely, `:false` and `:nil`.
+
+        [advance with right arrow]
+
 %section
   %section
     %h1 Basic Elixir
@@ -203,6 +315,16 @@
       %li.fragment Match Operator
       %li.fragment Function Definitions
       %li.fragment Case Statements
+
+    %aside.notes
+      :markdown
+        And that's it for the data types.  Next, we're moving on to various places you'll
+        make use of pattern matching: [advance down]
+
+        - The match operator [advance]
+        - Function definitions [advance]
+        - and Case statements [advance]
+
   %section
     %h1 Pattern Matching
     %h2 Match Operator
@@ -230,7 +352,7 @@
         This sets the previously-unbound variable 'foo' to the integer 1.  That's just
         assignment, right? [advance]
 
-        Not really.  If the equals sign is an assignment operator, why was that a valid 
+        Not really.  If the equals sign is an assignment operator, why is this a valid
         expression? It turns out the match operator is really more like making an
         assertion than it is assignment - it just turns out that if you assert an unbound
         variable matches a value, Elixir will bind the variable and the assertion will
@@ -244,7 +366,7 @@
     %h1 Pattern Matching
     %h2 Match Operator (cont)
     %p Here's some more advanced matches
-    %pre
+    %pre.fragment
       %code
         :preserve
           {:foo, bar} = {:foo, 3}
@@ -260,7 +382,7 @@
 
         What does this expression do?  Anyone care to answer?  That's right, it assigns
         bar to 3, so that the match would be successful.
-        
+
         Underscores play an interesting role in Elixir.  They tell the compiler that you
         don't care about the value in a given position in a Pattern you're matching on.
         Sort of like a wildcard for Pattern Matching.  Here's an example: [advance]
@@ -272,12 +394,12 @@
   %section
     %h1 Pattern Matching
     %h2 Match Operator (cont)
-    %pre.fragment
+    %pre
       %code
         :preserve
-          [a, 2] = [1, 2]
-          [a, 2] = [3, 2] # Here, a gets re-bound
-          [^a, 2] = [4, 2] # MatchError
+          [a, 2] = [1, 2] # After this expression a is bound to 1
+          [a, 2] = [3, 2] # Here, a gets re-bound to 3
+          [^a, 2] = [4, 2] # MatchError, because the hat keeps a from re-binding
 
     %aside.notes
       :markdown
@@ -286,7 +408,7 @@
         a filter (i.e. you want a MatchError thrown if the data on the righthand side
         doesn't match the presently-bound value in a given variable) then you need to
         signal to the compiler that you don't want to re-bind the variable.  This can be
-        done with the caret-symbol, or hat (^). [advance]
+        done with the caret-symbol, or hat (^).
 
         In Erlang, you cannot modify a variable once it's been bound.  Elixir removes
         this restriction, and so they had to provide this facility to differentiate
@@ -305,18 +427,20 @@
             _     -> "I don't care what your name is!"
           end
           print_name_egotistically.(:josh)
+          #=> "Your name is Josh!"
           print_name_egotistically.(:phil)
+          #=> "I don't care what your name is!"
 
     %aside.notes
       :markdown
         Pattern matching is used to choose between multiple possible definitions of a
         function.  As an example, I'll define a silly function: [advance]
 
-        That function has a different function definition depending on the pattern
-        matching for its arguments.  This is the first intensely different sort of thing
-        that we've run into in Elixir so far.  As I was a math major in college, when I
-        first ran across this sort of thing in Erlang it got me really excited, as
-        that's really how I often like to see a function defined. [advance]
+        That function is defined differently depending on the pattern that its arguments
+        matches.  This is the first intensely different sort of thing that we've run into
+        in Elixir so far.  As I was a math major in college, when I first ran across this
+        sort of thing in Erlang it got me really excited, as that's really how I often
+        like to see a function defined. [advance]
   %section
     %h1 Pattern Matching
     %h2 Case Statements
@@ -331,6 +455,17 @@
             {1,2,3} -> "This matches"
             {_,2,3} -> "This would match, but since it's below another match it isn't hit."
           end
+    %aside.notes
+      :markdown
+        Case Statements can be used for control flow, and they, too, operate based on
+        Pattern Matching. [advance]
+
+        Here you can see the middle case is what's going to match.  The first one just doesn't
+        match.  The second one matches.  The third one would match, but since it's below another
+        match it's not going to get executed, as the first pattern to match gets precedence.
+        
+        [advance right]
+
 %section
   %section
     %h1 Basic Elixir
@@ -341,8 +476,12 @@
       %li.fragment Using functions as first class types
     %aside.notes
       :markdown
+        That's it for the basics of Pattern Matching, let's move on to functions.
+
         In Elixir, functions are first class types.  This shouldn't be terribly
-        surprising; it *is* a functional programming language, after all.  Let's look at: [advance x 3]
+        surprising; it *is* a functional programming language, after all.  Let's look at:
+        
+        [advance down x 3]
   %section
     %h1 Functions
     %h2 Defining Them
@@ -359,12 +498,12 @@
 
         Functions take parameter lists and bodies, separated by arrows (`->`).  The
         parameter lists are used for Pattern Matching (we actually saw function
-        declaration in the last episode on Pattern Matching).
+        declaration in the last section on Pattern Matching).
 
         The `print_name` function above will match a tuple containing three elements,
         when the first element is the atom `:person`.  It then matches to a body that
         will concatenate the first and last names together (where by convention, we
-        assume they will be in the second and third positions in the tuple).
+        assume they will be in the second and third positions in the tuple). [advance]
   %section
     %h1 Functions
     %h2 Calling Them
@@ -389,7 +528,7 @@
         That's easy enough, although the dot makes calling them feel different from
         calling functions in modules..  What do you think happens if you try to call it
         with an argument that doesn't match any of the parameter lists? [advance]
-        
+
         It throws a FunctionClauseError.  It's worth noting that there's currently an
         ongoing discussion regarding removing that dot to call anonymous functions. [advance]
   %section
@@ -405,8 +544,8 @@
     %pre.fragment
       %code
         :preserve
-          calculate_bill.([{:item, 20}, {:item, 10}])
-          calculate_bill.({:item, 35})
+          calculate_bill.([{:item, 20}, {:item, 10}]) #=> 30
+          calculate_bill.({:item, 35}) #=> 35
     %pre.fragment
       %code
         :preserve
@@ -416,6 +555,10 @@
       :markdown
         Let's define an anonymous function that behaves differently depending on the
         argument provided: [advance]
+
+        So we've got an anonymous function here.  If you give it a list of two items, it
+        will return the sum of their prices.  If you give it a single item, it just returns
+        the price.
 
         Now, this is in fact a silly way to define this function (recursion would make
         more sense, so you could accept more than 2 items), but for the purposes of
@@ -485,6 +628,10 @@
       :markdown
         You can also write functions that take other functions as arguments.  For
         example: [advance]
+
+        (let's show this off in iex)
+
+        [now advance right]
 %section
   %section
     %h1 Basic Elixir
@@ -526,11 +673,11 @@
       :markdown
         Elixir ships with a tool called `mix` that is used for creating, compiling, and
         testing Elixir projects.  To use `mix` to start a new project, use `mix new
-        projectname` [advance]
+        modules_example` [do this in a terminal] [advance]
 
         This will generate a few files for you.  You end up with `lib` and `test`
         directories, and a few project files. Let's go ahead and look at the `mix.exs`
-        file that was generated.
+        file that was generated. [advance]
   %section
     %h1 Mix and Modules
     %h2 Using mix to begin a new project (cont)
@@ -543,17 +690,20 @@
             def project do
               [ app: :modules_example,
                 version: "0.0.1",
-                elixir: "~> 0.10.2-dev",
+                elixir: "~> 0.11.3-dev",
                 deps: deps ]
             end
 
             # Configuration for the OTP application
             def application do
-              []
+              [mod: { ModulesExample, [] }]
             end
 
             # Returns the list of dependencies in the format:
-            # { :foobar, "~> 0.1", git: "https://github.com/elixir-lang/foobar.git" }
+            # { :foobar, git: "https://github.com/elixir-lang/foobar.git", tag: "0.1" }
+            #
+            # To specify particular versions, regardless of the tag, do:
+            # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
             defp deps do
               []
             end
@@ -561,3 +711,195 @@
     %aside.notes
       :markdown
         I just wanted to show you a mixfile for now, let's go ahead and move on. [advance]
+  %section
+    %h1 Mix and Modules
+    %h2 Defining a module
+    %pre.fragment
+      %code
+        :preserve
+          defmodule ModulesExample.Publisher do
+            def publish(message) do
+              message
+            end
+          end
+    %aside.notes
+      :markdown
+        Now we open up the file `lib/modules_example/publisher.ex` and make it look like the
+        following: [advance]
+
+        > open up the project in vim and actually add this file
+
+        Now we'll save the file, compile it, and see if we can't use the function. [advance]
+
+  %section
+    %h1 Mix and Modules
+    %h2 Compiling a module
+    %p You can get a file compiled and available in an `iex` session in two ways:
+    %ul
+      %li.fragment Launch `iex` with the module as an argument
+      %li.fragment Use `elixirc` and launch iex from the dir with the beam
+
+    %aside.notes
+      :markdown
+        There are two ways to get the file compiled and into an `iex` session. [advance]
+
+        The first is to just launch `iex` with a module as an argument.  We'll do that
+        and verify that we can call this function.
+
+        > open up an iex session with `iex lib/modules_example/publisher.ex`, then call
+        > ModulesExample.Publisher.publish("foo")
+
+        (once that was successful, switch back to slides and [advance])
+
+        The second way to compile the module is by using `elixirc`.  This ships with elixir,
+        and can be invoked by `elixirc lib/modules_example/publisher.ex`.  It will
+        generate a file named `Elixir.ModulesExample.Publisher.beam` in the current
+        directory.  If you launch `iex` from that directory, the module will also be
+        available to you.
+
+        > Go ahead and compile it with elixirc and launch iex with no arguments, then
+        > call ModulesExample.Publisher.publish("foo")
+
+        [advance]
+  %section
+    %h1 Mix and Modules
+    %h2 Module definitions have return values
+    %pre.fragment
+      %code
+        :preserve
+          {:module, Foo,
+           <<70, 79, 82, 49, 0, 0, 7, 24, 66, 69, 65, 77, 65, 116, 111, 109, 0, 0, 0, 102,
+          0, 0, 0, 11, 10, 69, 108, 105, 120, 105, 114, 46, 70, 111, 111, 8, 95, 95, 105,
+          110, 102, 111, 95, 95, 4, 100, 111, 99, 115, 9, ...>>,
+           {:bar, 0}}
+
+    %aside.notes
+      :markdown
+        In Elixir, you can also just define a module directly inside the REPL.  For
+        someone that's coming from Erlang, this will be a bit surprising.  There's a
+        really interesting feature that comes out of defining a module.  To see what's
+        happening, we'll define one in iex.
+
+        (Open up an iex and type the following)
+
+            output = defmodule Foo do
+              def bar do
+                "whee"
+              end
+            end
+
+        You'll notice that `defmodule` returns a tuple.  It actually has a really neat
+        structure. [Go back to slides, and advance]
+
+        The tuple contains, in the following order:
+
+        - An atom, `:module`
+        - The constant representing the module: `Foo`
+        - A binary containing the bytecode defining the module.  This is extremely
+          interesting, as it can be used to (for instance) shove this module over
+          into another node and load it over the network without that node ever having
+          had the source code available to it.
+        - A tuple describing the last function defined in that module.  This is actually
+          just because the last item in the module definition return value tuple is just
+          the return value of the last executed expression in the module.  This happens
+          to be the return value of defining a function, which is itself a tuple containing
+          the function name and arity.
+  %section
+    %h1 Mix and Modules
+    %h2 Documenting a module
+    %ul
+      %li Module and Function Documentation are first-class
+      %li Use module attributes (beginning with @) to define them
+      %li.fragment Acces a module's docs using the `h` helper in `iex`
+
+    %aside.notes
+      :markdown
+        Elixir supports module and function documentation as first-class constructs.
+        They can be defined with the help of things known as module attributes.  These
+        begin with an `@` within a module.
+
+        Let's open up the `ModulesExample.Publisher` module from before and add documentation
+        to it. This is achieved by using the `@moduledoc` and `@doc` attributes.  You pass them
+        a heredoc, and it may contain markdown formatting.
+
+        (switch to a vim session, and add the following)
+
+            # in lib/modules_example/publisher.ex
+            defmodule ModulesExample.Publisher do
+              @moduledoc """
+                A module used for training in [ElixirSips](http://www.elixirsips.com).
+              """
+
+              @doc """
+                Returns the message it is provided.  This is *extremely* valuable!
+              """
+              def publish(message) do
+                message
+              end
+            end
+
+        [advance]
+
+        You can access a module's documentation using the `h` helper in `iex`.  To see
+        this in action, we'll launch iex with `iex lib/modules_example/publisher.ex`
+
+        (switch to iex)
+
+            h(ModulesExample.Publisher)
+
+        So that's the module's moduledoc.  Let's see a function's doc
+
+            h(ModulesExample.Publisher.publish)
+  %section
+    %h1 Mix and Modules
+    %h2 Documenting a module (cont)
+    %ul
+      %li Generate docs as html with ExDoc
+    %aside.notes
+      :markdown
+        So that's one way of looking at documentation - it's very convenient to have
+        access to documentation directly from your REPL, and it's a great feature of the
+        language.
+
+        You can also generate documentation as html (which makes the markdown
+        support...useful).  To generate documentation for this module, you'll use ExDoc
+        by way of `mix`.
+
+        We need to add ExDoc as a dependency for our project, so `mix` can install it
+        for us.  We'll open up mix.exs and add the dependency:
+
+        (open up mix.exs in vim)
+
+            defmodule ModulesExample.Mixfile do
+              ...
+              defp deps do
+                [
+                  { :ex_doc, github: "elixir-lang/ex_doc" }
+                ]
+              end
+            end
+
+        Now get mix to install our dependencies, then we'll generate the documentation:
+
+        (in a shell)
+
+            mix deps.get
+            mix docs
+
+        And that's it, nice documentation output for your modules! (open up in the browser)
+
+        [advance to the right]
+%section
+  %h1 Basic Elixir
+  %h2 Summary
+  %ul
+    %li Data Types
+    %li Pattern Matching
+    %li Functions
+    %li Mix and Modules
+  %aside.notes
+    :markdown
+      Alright, so that's covered the four main parts of Basic Elixir: Data Types, Pattern
+      Matching, Functions, and Mix and Modules.  From here, you have a basic understanding
+      of what developing in Elixir looks like from a syntax and tooling perspective.  Let's
+      take a five minute break, and then we'll move on to covering testing.

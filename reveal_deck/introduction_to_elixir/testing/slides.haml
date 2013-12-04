@@ -1,0 +1,440 @@
+%section
+  %h1 Introduction to Elixir
+  %h2 Testing
+  %ul
+    %li.fragment What is testing, and what is good for.
+    %li.fragment ExUnit, Elixir's built-in Unit Testing framework.
+    %li.fragment Building an example module via TDD.
+    %li.fragment Exercism.io
+    %li.fragment A great feature Elixir provides called doctests
+
+  %aside.notes
+    :markdown
+      Alright, in this section we're going to get an introduction to testing.  [advance]
+
+      What is it, what's it good for, [advance]
+
+      how do we do it in Elixir. [advance]
+
+      We'll build a module from the ground up with TDD. [advance]
+
+      We'll take a brief look at the tool that got me to write my first Elixir code [advance],
+
+      and we'll look at DocTests.  Let's get started.
+
+%section
+  %h1 What is Testing For?
+  %ul
+    %li Avoiding Regressions
+    %li i.e., refactoring without fear of accidentally changing behaviour
+    %li.fragment Thinking in tests
+    %li.fragment Feeling pain when modules start to get too complex.
+    %li.fragment Rapid Development
+
+  %aside.notes
+    :markdown
+      What is testing for?  People usually think its value resides in avoiding
+      regressions, and making sure code isn't broken later.  In my opinion, there's
+      far greater value in [advance]
+
+      - Thinking in tests [advance]
+      - Feeling pain when modules start to get too complex.  If the tests are getting
+        hard to write, odds are the code is doing too much. [advance]
+      - and Rapid Development.  Once I knew how to test in Erlang, I had a working chat
+        server in just a few hours.  I spent weeks before that on more trivial projects.
+
+%section
+  %h1 Unit Testing
+  %h2.fragment Test a single thing
+
+  %aside.notes
+    :markdown
+      Unit testing is a means of testing just a single 'unit' in your system. [advance]
+
+      This can be contrasted with an acceptance test, which tests the behaviour of a system
+      as a whole, and verifies that it satisfies the overarching requirements.
+
+      Unit tests, on the other hand, are focused with a single portion of the system.
+
+%section
+  %h1 ExUnit
+  %pre.fragment
+    %code
+      :preserve
+        def test_one_is_one(_) do
+          assert 1 == 1
+        end
+  %pre.fragment
+    %code
+      :preserve
+        test "one is one" do
+          assert 1 == 1
+        end
+  %pre.fragment
+    %code
+      :preserve
+        test "one is two" do
+          assert 1 == 2
+        end
+  %pre.fragment
+    %code
+      :preserve
+         Expected 1 to be (==) 2.
+  %aside.notes
+    :markdown
+      Elixir comes with a built in tool for writing unit tests, called `ExUnit`.  An
+      ExUnit test case is just a module that uses `ExUnit.Case`.  We'll build a test
+      case in a little bit, but for now I'll just tell you a few more things about
+      ExUnit.
+
+      A module extended with `ExUnit.Case` will run all functions whose names begin with
+      `test` that have arity 1 - that is, that only take a single argument.  For instance,
+      you could define a function like this: [advance]
+
+      However, ExUnit provides a `test` macro that allows you to write your tests a
+      bit easier on the eyes: [advance]
+
+      We've also seen `assert` here, which is a macro provided by ExUnit to describe
+      the intended behaviour of your system.  For instance, if you have this test case:
+      [advance]
+
+      Then when you run the test suite, the test will fail with [advance]
+
+      "Expected 1 to be (==) 2"
+
+      The inverse of `assert` is `refute`.  These two macros provide most of what you'll
+      need to write your tests.  There are a few others provided, and they can be found
+      in [ExUnit's Assertions documentation](http://elixir-lang.org/docs/stable/ExUnit.Assertions.html)
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      To get comfortable testing in Elixir, we're going to create a module of our own
+      using Test-Driven-Development, or TDD.  If you're unfamiliar with this concept,
+      it's basically the idea that you write your tests first, then write just enough
+      code to make them pass, and no more.  That is, you let the tests "drive" the
+      development of your codebase.
+
+      We're going to test-drive a module called `Schizo`.  It's going to provide two
+      functions: `uppercase` and `unvowel`.  These functions will uppercase every
+      other word, and remove the vowels from every other word, respectively.
+
+      To get started, we'll use `mix` to create a new app:
+
+          mix new schizo
+
+      Go ahead and `cd` into the `schizo` directory.
+
+      Since we'll be using TDD, let's go ahead and write a test file, and define
+      some behaviour for our first function, `uppercase.` [advance]
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+          defmodule SchizoTest do
+            use ExUnit.Case
+
+            test "uppercase doesn't change the first word" do
+              assert(Schizo.uppercase("foo") == "foo")
+            end
+
+            test "uppercase converts the second word to uppercase" do
+              assert(Schizo.uppercase("foo bar") == "foo BAR")
+            end
+
+            test "uppercase converts every other word to uppercase" do
+              assert(Schizo.uppercase("foo bar baz whee") == "foo BAR baz WHEE")
+            end
+          end
+
+      Now let's just start implementing, making tests pass one by one as we go.
+
+      First, open up `lib/schizo.ex`:
+
+          defmodule Schizo do
+            use Application.Behaviour
+
+            # See http://elixir-lang.org/docs/stable/Application.Behaviour.html
+            # for more information on OTP Applications
+            def start(_type, _args) do
+              Schizo.Supervisor.start_link
+            end
+
+            def uppercase(string) do
+              string
+            end
+          end
+
+      Now run the tests - one of them passes with just this, but now we need to actually
+      start implementing logic.
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Alright, so now let's just go ahead and talk through our anticipated logic real
+      quickly:
+
+          def uppercase(string) do
+            string
+            # Split string on spaces into a list of words
+            # Transform every other word (uppercase)
+            # Join the words back with space
+          end
+
+      Now two of these are really easy to do.  There's a `String.split/1` function
+      that will split a string into words, and there's an `Enum.join/2` that will join
+      a list of strings with the specified separator.
+
+          def uppercase(string) do
+            string
+            # Split string on spaces into a list of words
+            words = String.split(string)
+            # Transform every other word (uppercase)
+            # Join the words back with space
+            Enum.join(words, " ")
+          end
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Now all that's left is to transform every other word.  This would be trivial if
+      we had the index of each item as it was passed to some function, as we'd only apply
+      the function when the index was even.
+
+      It turns out there's a function called `Stream.with_index/1` that takes an enumerable
+      and turns it into a stream where each item in the enumerable is accompanied by its
+      index - this is exactly what we want.
+
+          def uppercase(string) do
+            string
+            # Split string on spaces into a list of words
+            words = String.split(string)
+            # Transform every other word (uppercase)
+            words_with_index = Stream.with_index(words)
+            transformed_words = Enum.map(words_with_index, &uppercase_every_other_word/1)
+            # NOTE: The ampersand just says to extract this named function as an anonymous
+            # thing we can pass around
+
+            # Join the words back with space
+            Enum.join(transformed_words, " ")
+          end
+
+          def uppercase_every_other_word({word, index}) do
+            word
+          end
+
+      We'll go ahead and run the tests, and we can see that we're still working.  Now all
+      that's left is to actually make it uppercase every other word, so let's look at that.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+          def uppercase_every_other_word({word, index}) do
+            case rem(index, 2) do
+              1 -> String.upcase(word)
+              0 -> word
+            end
+          end
+
+      That's really all it takes.  Run the tests, and they should pass.
+
+      Now that we've implemented uppercase, let's implement unvowel.  First, we write
+      some tests:
+
+          test "unvowel doesn't change the first word" do
+            assert(Schizo.unvowel("foo") == "foo")
+          end
+
+          test "unvowel removes the second word's vowels" do
+            assert(Schizo.unvowel("foo bar") == "foo br")
+          end
+
+          test "unvowel removes every other word's vowels" do
+            assert(Schizo.unvowel("foo bar baz whee") == "foo br baz wh")
+          end
+
+      Once again, we'll run the tests and start implementing, step-by-step, until they
+      pass.  The first test is, once again, very easy to get to pass:
+
+          def unvowel(string) do
+            string
+          end
+
+      Go ahead and run them, and now we're down to two failing tests again.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      So we could just start copying and pasting to get this sucker to pass, but we're
+      Real Programmers, so we won't do that.  Let's take a second to talk through what
+      we wish we could write, and then make it so:
+
+          defmodule Schizo do
+            def uppercase(string) do
+              transform_every_other_word(string, &uppercaser/1)
+            end
+
+            def transform_every_other_word(string, transformation) do
+              # Split string on spaces into a list of words
+              words = String.split(string)
+              # Transform every other word (uppercase)
+              words_with_index = Stream.with_index(words)
+              transformed_words = Enum.map(words_with_index, transformation)
+              # Join the words back with space
+              Enum.join(transformed_words, " ")
+            end
+
+            def unvowel(string) do
+              string
+            end
+
+            def uppercaser({word, index}) do
+              case rem(index, 2) do
+                1 -> String.upcase(word)
+                0 -> word
+              end
+            end
+          end
+
+      Alright, so now that we've got that available, we should trivialy be able to
+      write a new transformation function, called the `unvoweler`:
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+          def unvowel(string) do
+            transform_every_other_word(string, &unvoweler/1)
+          end
+
+          def unvoweler({word, index}) do
+            case rem(index, 2) do
+              1 -> Regex.replace(%r([aeiou]), word, "")
+              0 -> word
+            end
+          end
+
+      So that should really be all we need.  Run the tests, and they're all green.
+
+      Now, TDD consists of "red, green, refactor."  So far, we've just done "red,
+      green."  There's a lot of duplication here, and removing it will teach us some
+      fun stuff about elixir, so let's go ahead and refactor this until we're happy
+      with it.  The whole point of the tests is that we can do this without fear.
+
+      We want a generic `transformer` function that takes this {word, index} as input,
+      and a transformation function, and only applies it to every other word.  We'd
+      expect to be able to rewrite the `unvoweler` function like this:
+
+          def unvoweler(input) do
+            transformer(input, fn (word) -> Regex.replace(%r([aeiou]), word, "") end)
+          end
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      So let's see how to write that `transformer` function.  Not surprisingly, we'll
+      just grab the old unvoweler function definition and tweak it a bit:
+
+          def transformer({word, index}, transformation) do
+            case rem(index, 2) do
+              1 -> transformation.(word)
+              0 -> word
+            end
+          end
+
+      We'll run the tests...and they pass.  Now let's redefine uppercaser in terms
+      of transformer:
+
+          def uppercaser(input) do
+            transformer(input, &String.upcase/1)
+          end
+
+      Run the tests, and now we have this pretty nicely factored set of functions
+      for doing these transforms.  It's also very easy to extend it with more
+      functions along the same lines - we'd just need to define a new transformation
+      and pass it to the transformer.
+
+      Alright, so that's it for the live coding for now.  Let's have a look at the
+      tool that got me to write my first elixir: Exercism.io
+%section
+  %h1 Exercism.io
+  %p
+    :markdown
+      [http://www.exercism.io](http://www.exercism.io) is a community with the goal
+      of providing peer review for basic code katas.
+
+  %aside.notes
+    :markdown
+      [http://www.exercism.io](http://www.exercism.io) is a community with the goal
+      of providing peer review for basic code katas.  They also try to converge on
+      the 'ideal' solution to various given problems in different languages.  They
+      have an Elixir track, and that's where I wrote my first Elixir code.
+
+      I'd definitely suggest you guys go over there and get an account - it will help
+      you hone your chops, with great feedback from people who care.
+
+      Now let's get back to one more testing tool of interest in Elixir: [advance]
+%section
+  %h1 DocTests
+  %aside.notes
+    :markdown
+      Elixir also ships with support for something called doctests.  Basically, if you
+      place an example `iex` session in your module or function documentation, you can
+      easily verify its behaviour by specifying a doctest in your test case.
+
+      This was cribbed from Python, to my knowledge, but coming from Ruby I never have
+      had a chance to play with it.  It's amazing.  Let's go ahead and add a doctest
+      to the Schizo module so you can see how it works:
+
+          @moduledoc """
+          This is a module that provides odd behaviour for transforming every other word
+          in a string.
+
+          Here are some examples:
+
+          iex> Schizo.uppercase("this is an example")
+          "this IS an EXAMPLE"
+
+          iex> Schizo.unvowel("this is an example")
+          "this s an xmpl"
+          """
+
+      To make these doctests run when we run our test suite, we just open up the
+      `SchizoTest` module and add the following line:
+
+          doctest Schizo
+
+      Then, we run the tests again, and two new test cases have been added.  Pretty cool,
+      huh?  Gone are the days of documentation that is subtly incorrect!
+
+%section
+  %h1 Testing
+  %h2 Summary
+  %ul
+    %li Unit Tests
+    %li TDD Exploration
+    %li DocTests
+  %aside.notes
+    :markdown
+      That wraps up this section.  We just learned how to write unit tests, TDD a module
+      from the ground up, and explored DocTests.  Armed with the ability to TDD your
+      code, you should be able to level up in Elixir substantially faster from here on
+      out.

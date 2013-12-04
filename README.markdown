@@ -13,12 +13,29 @@ reveal-ck generate
 servedir # this is an alias I have that just does `ruby -run -e httpd . -p 9091` to serve current dir files on port 9091
 ```
 
+## Prep Work
+There will be live coding examples, so go ahead and get a tmux session open on
+both monitors so you don't have to look at the screen to see what you're typing:
+
+In one terminal, which goes on your laptop screen:
+
+```sh
+tmux
+# (then rename the session to 'examples')
+```
+
+And in another, which goes on the projector:
+
+```sh
+tmux a -t examples
+```
+
 ## Outline
 
 Since it's a comically long talk, it's broken up into the following sections:
 
 - Introduction to Elixir
-  - Basic Elixir
+  - Basic Elixir [25 minutes]
     - Data Types
       - Atoms
       - Numbers
@@ -55,6 +72,7 @@ Since it's a comically long talk, it's broken up into the following sections:
   - Slightly less basic Elixir (but still pretty basic)
     - List Comprehensions
     - Records
+    - Recursion
     - Processes
     - Pipe Operator
 - Introduction to OTP with Elixir

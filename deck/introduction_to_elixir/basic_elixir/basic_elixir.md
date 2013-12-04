@@ -529,11 +529,11 @@ end
 
 ## Defining a module
 
-Open up an editor and go to the file `lib/modules_example.ex` and edit it to
+Open up an editor and go to the file `lib/modules_example/publisher.ex` and edit it to
 look like the following:
 
 ```elixir
-defmodule ModulesExample do
+defmodule ModulesExample.Publisher do
   def publish(message) do
     message
   end
