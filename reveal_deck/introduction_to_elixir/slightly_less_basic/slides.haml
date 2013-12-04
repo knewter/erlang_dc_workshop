@@ -1,0 +1,522 @@
+%section
+  %h1 Introduction to Elixir
+  %h2 Slightly Less Basic Elixir
+  %p But still pretty basic...
+
+  %aside.notes
+    :markdown
+      Alright, so now we're going to move on to some slightly more advanced bits
+      of the basics of Elixir, if that makes any sense.
+
+%section
+  %h1 Slightly Less Basic Elixir
+  %ul
+    %li.fragment List Comprehensions
+    %li.fragment Records
+    %li.fragment Pipe Operator
+    %li.fragment Recursion
+    %li.fragment Processes
+
+  %aside.notes
+    :markdown
+      So the main points we're going to cover are:
+
+      List Compreshensions [advance]
+
+      Records [advance]
+
+      Pipe Operator [advance]
+
+      Recursion [advance]
+
+      and Processes [advance]
+%section
+  %h1 List Comprehensions
+  %h2 What are they for?
+  %pre.fragment
+    %code
+      :preserve
+        iex(1)> lc x inlist [1, 2, 3, 4], do: x*2
+        [2, 4, 6, 8]
+
+        iex(3)> lc x inlist [1, 2, 3, 4], do: [x, x*2]
+        [[1, 2], [2, 4], [3, 6], [4, 8]]
+
+        iex(6)> lc x inlist [1, 2, 3, 4], rem(x, 2) == 0, do: x
+        [2, 4]
+
+  %aside.notes
+    :markdown
+      The general idea behind List Comprehensions is to create a list from one or more
+      other lists.  Let's look at some basic examples:  [advance]
+
+      From this we get the general principle - for each x in some list, return an
+      element for a new list.  We also might create a filter to filter out some
+      potential elements.  From what we've seen so far, this doesn't seem like much
+      more than some syntactic sugar for mapping lists.  It gets better though :)
+%section
+  %h1 List Comprehensions
+  %h2 Combining Multiple Lists
+  %pre.fragment
+    %code
+      :preserve
+        iex(1)> lc x inlist [1, 2, 3], y inlist [4, 5, 6], do: x*y
+        [4, 5, 6, 8, 10, 12, 12, 15, 18]
+  %pre.fragment
+    %code
+      :preserve
+        iex(3)> lc x inlist [1, 2, 3], y inlist [4, 5, 6], do: {x, y}
+        [{1, 4}, {1, 5}, {1, 6}, {2, 4}, {2, 5}, {2, 6}, {3, 4}, {3, 5}, {3, 6}]
+  %pre.fragment
+    %code
+      :preserve
+        iex(13)> lc x inlist [1, 3, 5, 7, 9], y inlist [2, 4, 6, 8, 10], rem((x*y)-1, 9) == 0, do: [x, y]
+        [[1, 10], [5, 2], [7, 4]]
+  %aside.notes
+    :markdown
+      Let's look at combining a couple of lists: [advance]
+
+      So what happened there?  For each x in the first list, it generated an element
+      for the output list that consisted of that x * each y in the list.  Of course,
+      the output for a list comprehension can get more interesting.
+
+      For instance, you might want to generate a list of tuples: [advance]
+
+      You can of course get a bit fancy.  Let's find all the numbers based on the
+      first five odd numbers and the first five even numbers where the product minus 1
+      is divisible by 9: [advance]
+
+      This is, of course, a contrived example, but it was a pretty comprehensive use
+      of the features provided by list comprehensions.  Let's go a little bit further.
+      Let's test drive a module that will generate a deck of cards.
+
+      I've already got a test case shell for this.  We'll pull it up and see about
+      making the tests pass.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      I've gone ahead and started a test shell case for this.
+
+          cp -r elixir_card_deck_prep_project elixir_card_deck
+          cd elixir_card_deck
+
+      Let's go ahead and look at the test suite to see what this is going to do for
+      us:
+
+          vim text/elixir_card_deck_test.exs
+
+      Alright, so it's pretty basic.  Basically, we want to generate a deck of cards.
+
+      We're going to use List Comprehensions, as you might have guessed.  Let's focus
+      on making the first test pass:
+
+          defmodule ElixirCardDeck do
+            use Application.Behaviour
+
+            # See http://elixir-lang.org/docs/stable/Application.Behaviour.html
+            # for more information on OTP Applications
+            def start(_type, _args) do
+              ElixirCardDeck.Supervisor.start_link
+            end
+
+            def make_deck do
+              lc suit inlist suits, value inlist values, do: {:card, value, suit}
+            end
+
+            defp suits do
+              [:spades]
+            end
+
+            defp values do
+              [:a]
+            end
+          end
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      So that gets one  of the tests passing very quickly.  The other one doesn't look
+      very difficult to get done here either.
+
+          defmodule ElixirCardDeck do
+            use Application.Behaviour
+
+            # See http://elixir-lang.org/docs/stable/Application.Behaviour.html
+            # for more information on OTP Applications
+            def start(_type, _args) do
+              ElixirCardDeck.Supervisor.start_link
+            end
+
+            def make_deck do
+              lc value inlist values, suit inlist suits, do: {:card, value, suit}
+            end
+
+            defp suits do
+              [:spades, :clubs, :diamonds, :hearts]
+            end
+
+            defp values do
+              [:a, 2, 3, 4, 5, 6, 7, 8, 9, 10, :j, :q, :k]
+            end
+          end
+
+      Alright, run the tests and they pass.  That's basically it - building a deck of
+      cards with list comprehensions in Elixir is mostly a one liner. That's it for
+      List Comprehensions. (back to the slides)
+%section
+  %h1 Records
+  %aside.notes
+    :markdown
+      In Elixir, it is common to represent structured data using Records.  Let's have
+      a look at the basics of records, and see how they can be used in pattern matching.
+      [advance]
+%section
+  %h1 Records
+  %h2 Defining Them
+  %pre.fragment
+    %code
+      :preserve
+        defrecord NewRecord, first_name: nil, last_name: "Dudington"
+        # Make a new one, two different ways:
+        dude = NewRecord.new first_name: "Dude"
+        bro = NewRecord[first_name: "Bro"]
+        dude.first_name
+        dude.last_name
+        bro.first_name
+        bro.last_name
+
+  %aside.notes
+    :markdown
+      You can define records easily using defrecord.  It returns a tuple representing the
+      record: [advance]
+
+      (do the following in an iex)
+
+          defrecord NewRecord, first_name: nil, last_name: "Dudington"
+          # Make a new one, two different ways:
+          dude = NewRecord.new first_name: "Dude"
+          bro = NewRecord[first_name: "Bro"]
+          dude.first_name
+          dude.last_name
+          bro.first_name
+          bro.last_name
+
+      (back to the slides)
+
+      Records are just modules - nothing more, nothing less.  You can define them in the
+      block style, and define functions on them as well: [advance]
+%section
+  %h1 Records
+  %h2 Defining Them
+  %pre
+    %code
+      :preserve
+        defrecord Person, first_name: nil, last_name: "Dudington" do
+          def name(record) do
+            "\#{record.first_name} \#{record.last_name}"
+          end
+        end
+        guy = Person.new first_name: "Guy"
+        guy.name
+  %pre.fragment
+    %code
+      :preserve
+        Person.name(guy)
+  %pre.fragment
+    %code
+      :preserve
+        fake_person = {Person, "fake", "person"}
+        fake_person.name
+  %aside.notes
+    :markdown
+      This looks a lot like classes/objects in Ruby - state and behaviour as one.
+      However, it's generally frowned upon to do this, and things will likely be
+      better if, for instance, you were just to define a PersonPrinter module that had
+      functions meant to operate upon a Person record.  Alternatively, if you just used
+      the module in the more traditional manner (rather than via object-style dots) by doing
+      something like this: [advance]
+
+      Records are really just syntactic sugar on tuples.  You can see this by creating
+      the appropriate kind of tuple, and seeing it behave as if it were a record
+      "instance": [advance]
+%section
+  %h1 Records
+  %h2 Pattern Matching
+  %pre.fragment
+    %code
+      :preserve
+        defmodule PersonPrinter do
+          def say_hello(Person[first_name: first, last_name: "Dudington"]) do
+            "hey it's my brother, \#{first}!"
+          end
+
+          def say_hello(Person[first_name: first]) do
+            "hello, \#{first}"
+          end
+        end
+
+        bro = Person.new first_name: "Bro", last_name: "Dudington"
+        stranger = Person.new first_name: "Stranger", last_name: "von Strangehands"
+        PersonPrinter.say_hello(bro)      #=> "hey it's my brother, Bro!"
+        PersonPrinter.say_hello(stranger) #=> "hello, Stranger"
+  %aside.notes
+    :markdown
+      It's easy and convenient to pattern match on records.  Here's an example: [advance]
+
+      You can see here that different function bodies match based on the content of the
+      record that's passed as an argument.  This is the power of Pattern Matching as
+      brought to bear on Records.
+%section
+  %h1 Pipe Operator
+  %h2 |&gt;
+  %pre.fragment
+    %code
+      :preserve
+        ps ax|grep vim|awk '{ print $1 }'
+  %aside.notes
+    :markdown
+      The Pipe Operator is used to quickly and easily create a pipeline of functions.
+      It's an extremely common thing you run into in various programming contexts.
+
+      In Unix, a pipeline might look something like this: [advance]
+
+      This would list the processes out, grep the resulting lines for the string `vim`,
+      and print their PID.  There are substantially better ways to accomplish this, but
+      it serves as a pretty comprehensible example.
+
+      The reason Unix has a means of piping the output of one program into the input of
+      another is that it's an exceedingly useful way of composing small operations into
+      large, useful expressions.
+
+      It turns out that that's most of what functional programming is, so you'd expect
+      the pipe operator to be very useful, and you'd be right.  For the record, Elixir
+      cribbed this from F#.
+
+      In Elixir, the pipe operator takes the output of the expression on the left of
+      it, and feeds it in as the first argument to the function on the right of it.
+      Let's see what that looks like with some more live coding.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      For our example app, we'll take the output of our `ps` command as input, and
+      we'll generate functions to serve as `grep` and `awk` for building out the same
+      pipeline.
+
+      We'll generate a new application:
+
+          mix new pipe_operator_playground
+          cd pipe_operator_playground
+
+      Now let's go modify the existing test:
+
+          defmodule PipeOperatorPlaygroundTest do
+            use ExUnit.Case
+
+            test "ps_ax outputs some processes" do
+            end
+
+            test "grep(thing) returns lines that match 'thing'" do
+            end
+
+            test "awk(1) splits on whitespace and returns the first column" do
+            end
+
+            test "the whole pipeline works" do
+            end
+          end
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      So there's our rough shell.  Let's go ahead and start filling it in.
+
+          test "ps_ax outputs some processes" do
+            output = """
+              PID TTY      STAT   TIME COMMAND
+             8544 ?        S      0:00 [kworker/u:1]
+            10919 pts/4    Sl+    0:14 vim 016_Pipe_Operator.markdown
+            10941 pts/5    Ss     0:00 -bash
+            13936 pts/5    Sl+    0:00 vim test/pipe_operator_playground_test.exs
+            14422 ?        S      0:00 sleep 3
+            """
+            assert Unix.ps_ax == output
+          end
+
+      Here we're just getting some basic test data in for our pipeline.  I just read
+      in the ps command and stripped most of it out.  We just want to assert that we
+      have a function, `Unix.ps_ax`, that outputs this data to get us started.  Let's
+      go ahead and make the module and corresponding function:
+
+          defmodule Unix do
+            def ps_ax do
+              """
+                PID TTY      STAT   TIME COMMAND
+               8544 ?        S      0:00 [kworker/u:1]
+              10919 pts/4    Sl+    0:14 vim 016_Pipe_Operator.markdown
+              10941 pts/5    Ss     0:00 -bash
+              13936 pts/5    Sl+    0:00 vim test/pipe_operator_playground_test.exs
+              14422 ?        S      0:00 sleep 3
+              """
+            end
+          end
+
+      We'll run the tests, and since we just copy-pasted the output of a function, I'd
+      be flabbergasted if they didn't succeed.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Now that that's done with, let's fill in the next test:
+
+          test "grep(thing) returns lines that match 'thing'" do
+            input = """
+            foo
+            bar
+            thing foo
+            baz
+            thing qux
+            """
+            output = ["thing foo", "thing qux"]
+            assert Unix.grep(input, 'thing') == output
+          end
+
+      Alright, here we're expecting to define a grep command that takes a regex of
+      some sort to filter its input.  Let's see what that looks like:
+
+          def grep(input, match) do
+            lines = String.split(input, "\n")
+            Enum.filter(lines, fn(line) -> Regex.match?(%r/\#{match}/, line) end)
+          end
+
+      This would, hilariously, be a bit shorter if we were to use a pipeline for it,
+      but we can always come back to that.  I'm going to try to be laser-focused on
+      the actual pipeline we're building, for now, for illustrative purposes.
+
+      Go ahead and run the tests, and they'll pass.
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Let's see the next test:
+
+          test "awk(1) splits on whitespace and returns the first column" do
+            input = ["foo bar", "  baz    qux "]
+            output = ["foo", "baz"]
+            assert Unix.awk(input, 1) == output
+          end
+
+      Alright, so here we're expecting to split on whitespace of some sort, and return
+      the column we ask for.  Easy enough, let's go ahead and implement it:
+
+          def awk(lines, column) do
+            Enum.map(lines, fn(line) ->
+              stripped = String.strip(line)
+              columns = Regex.split(%r/ /, stripped, trim: true)
+              Enum.at(columns, column-1)
+            end)
+          end
+
+      Run the tests, they should all pass.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Finally, let's see how we can glue these pieces together with the pipe operator,
+      which was the whole flipping point of this exercise, right?
+
+          test "the whole pipeline works" do
+            assert (Unix.ps_ax |> Unix.grep('vim') |> Unix.awk(1)) == ["10919", "13936"]
+          end
+
+      Go ahead and run the test, and it should just work.  That's what a pipeline's
+      good for - turning a whole lot of work into one small, easy to read piece.
+      Without the pipeline, that would have been written:
+
+          Unix.awk(Unix.grep(Unix.ps_ax, 'vim'), 1)
+
+      Which is just awful to read, especially if you look at the distance between
+      'awk' and its argument specifying the column.
+
+      Anyway, now that we've played with the pipe a bit, let's clean up the rest of
+      the pieces of this code that could benefit from pipelines:
+
+          def grep(input, match) do
+            String.split(input, "\n")
+              |> Enum.filter(fn(line) -> Regex.match?(%r/\#{match}/, line) end)
+          end
+
+          def awk(lines, column) do
+            Enum.map(lines, fn(line) ->
+              stripped = String.strip(line)
+              Regex.split(%r/ /, stripped, trim: true)
+                |> Enum.at(column-1)
+            end)
+          end
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+        You can see we can't easily pipeline through the `Regex.split` function.  This
+        is kind of untrue - we can use it, but since it doesn't take the input string as
+        the first argument, it looks exceedingly unwieldy.  Just to show you what this
+        looks like, let me show you a way I would *not* suggest:
+
+            def awk(lines, column) do
+              Enum.map(lines, fn(line) ->
+                String.strip(line)
+                  |> (&Regex.split(%r/ /, &1, trim: true)).()
+                  |> Enum.at(column-1)
+              end)
+            end
+
+        So yeah, that's technically a thing you can do, but don't.
+%section
+  %h1 Pipe Operator
+  %h2 Summary
+  %aside.notes
+    :markdown
+      Alright, so we learned how to use the Pipe Operator to chain together functions
+      to form a composite function that performs a larger task using smaller,
+      lego-style functional pieces.
+
+%section
+  %h1 Recursion
+  %h2.fragment Recursion
+  %h3.fragment Recursion
+  %h4.fragment Recursion
+  %h3.fragment Recursion
+  %h2.fragment Recursion
+  %h1.fragment Recursion
+
+  %aside.notes
+    :markdown
+      So let's talk about recursion [advance]
+
+      [advance]
+      [advance]
+      [advance]
+      [advance]
+      [advance]
+
+      We're not going to talk about it a ton, I just want to cover it briefly as a
+      concept.  Recursive functions call themselves again.  For instance, we might
+      write a recursive function to find the 

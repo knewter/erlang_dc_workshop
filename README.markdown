@@ -60,7 +60,7 @@ Since it's a comically long talk, it's broken up into the following sections:
       - Module definitions have return values
       - Document a Module
       - Generating documentation output using ExDoc
-  - Testing
+  - Testing [20 minutes]
     - What is Testing For?
     - Unit Testing
       - ExUnit
@@ -72,9 +72,9 @@ Since it's a comically long talk, it's broken up into the following sections:
   - Slightly less basic Elixir (but still pretty basic)
     - List Comprehensions
     - Records
+    - Pipe Operator
     - Recursion
     - Processes
-    - Pipe Operator
 - Introduction to OTP with Elixir
   - Servers
   - Finite State Machines
