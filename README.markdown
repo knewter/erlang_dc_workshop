@@ -69,7 +69,7 @@ Since it's a comically long talk, it's broken up into the following sections:
       - Examples / live coding
       - Plug Exercism.io
       - Doctests - ZOMG
-  - Slightly less basic Elixir (but still pretty basic)
+  - Slightly less basic Elixir (but still pretty basic) [25 minutes]
     - List Comprehensions
     - Records
     - Pipe Operator

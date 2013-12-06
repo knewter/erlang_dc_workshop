@@ -1,0 +1,272 @@
+%section
+  %h1 Finite State Machines
+  %h2 GenFSM
+  %ul
+    %li.fragment What a Finite State Machine (FSM) is
+    %li.fragment An example FSM that we'll be implementing
+    %li.fragment How to implement an FSM using GenFSM
+
+  %aside.notes
+    :markdown
+      Alright, so now we're going to look at implementing Finite State Machines with
+      OTP using GenFSM.  We'll quickly cover: [advance]
+
+      What a Finite State Machine (FSM) is [advance]
+
+      An example FSM that we'll be implementing [advance]
+
+      How to implement an FSM using GenFSM.  Let's get started. [advance]
+%section
+  %h1 Finite State Machines
+  %h2 What they are
+  %p A means of modelling some computation.
+  %ul
+    %li.fragment It can be in one of a limited number of states;
+    %li.fragment It has an initial state;
+    %li.fragment It can transition from one state to another based on some event or condition.
+  %aside.notes
+    :markdown
+      A Finite State Machine is a means of modelling some computation: [advance]
+
+      - It can be in one of a limited number of states; [advance]
+      - It has an initial state; [advance]
+      - It can transition from one state to another based on some event or condition.
+
+      They can be used to solve a wide range of problems, and often they make
+      thinking about the problem more clear than it would be with other available
+      solutions.  For example, I've used FSMs in the past to help less experienced
+      developers change a black box, scary-looking regular expression from doom into a
+      tight, meaningful class in which the error in their logic became glaringly
+      obvious.
+%section
+  %h1 Finite State Machines
+  %h2 Our example FSM
+  .fragment
+    :markdown
+      ![Example FSM](./images/diagram.png)
+  %aside.notes
+    :markdown
+      It's always good to have a problem domain, so we're going to build a Finite
+      State Machine to match some input and see if it contains the string 'sips'
+      anywhere in it.  Let's see what that machine would look like: [advance]
+
+      This is known as an acceptor state machine.  We'll consider a given machine as
+      'successful' if it ends up in the `got_sips` state, and anything else we
+      consider unsuccessful.  If it's fed the string 'sips' at any point, it falls
+      into the `got_sips` state, and can't get out.
+
+      It starts out in `starting` and proceeds if it is passed an `s` as input.  Any
+      other input from that state will just transition it into the `starting` state
+      again.  An `s` takes it to the `got_s` state.
+
+      From `got_s`, anything but an `i` will transition it back to the `starting`
+      state.  An `i` will make it proceed to the `got_si` state.
+
+      This repeats for `p`.
+
+      Finally, from `got_sip`, if another `s` is received it proceeds to the
+      `got_sips` state.  At that point, any other input doesn't affect the state of
+      the machine.
+
+      Anyway, let's go forward with the FSM implementation.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Now that we've got the theory and the domain for our project out of the way,
+      let's go ahead and start implementing.  Make a new project:
+
+          mix new gen_fsm_playground && cd gen_fsm_playground
+
+      Now open up a new test file, `test/sips_matcher_test.exs` and add the following:
+
+          defmodule SipsMatcherTest do
+            use ExUnit.Case
+
+            test "[:starting] it successfully consumes the string 's'" do
+              fsm = SipsMatcher.start_link
+              assert SipsMatcher.consume_s(fsm) == :got_s
+            end
+
+            test "[:starting] it successfully consumes strings other than 's'" do
+              fsm = SipsMatcher.start_link
+              assert SipsMatcher.consume_not_s(fsm) == :starting
+            end
+          end
+
+      Here we're just defining the beginnings of our `SipsMatcher` GenFSM.  We expect
+      our public api to consist of `start_link/0`, `consume_s/1`, and
+      `consume_not_s/1` at the very least.  If we were to run the tests now, we know
+      they would fail as there's no `SipsMatcher` module, so let's go ahead and define
+      that module at the top of the file.
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Here...
+
+          defmodule SipsMatcher do
+            use GenFSM.Behaviour
+
+            # Public API
+            def start_link do
+              {:ok, fsm} = :gen_fsm.start_link(__MODULE__, [], [])
+              fsm
+            end
+
+            def consume_s(fsm) do
+              :gen_fsm.sync_send_event(fsm, :s)
+            end
+
+            def consume_not_s(fsm) do
+              :gen_fsm.sync_send_event(fsm, :not_s)
+            end
+          end
+
+      Now, this is a little bit to take in.  First, we make ourselves a nice
+      `start_link` function that hides some of the `gen_fsm` interface from our
+      consumers.  Next, we define a couple of functions for consuming `s` and `not_s`.
+      Here, we're using the `gen_fsm` `sync_send_event/2` interface.  Generally, you
+      want to use async here (just `send_event/2`).  However, it's a bit harder to
+      test async things, so for the sake of demonstration and testability we'll make
+      this synchronous.  You can look into the docs to find an async example.  No
+      one's really documented this synchronous-style example anywhere as far as I
+      could find.
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Anyway, this won't work yet because we aren't supporting the GenFSM expected
+      behaviours yet.  Let's see what that looks like:
+
+          test "it successfully consumes the string 'sips'" do
+            fsm = SipsMatcher.start_link
+            SipsMatcher.consume_s(fsm)
+            SipsMatcher.consume_i(fsm)
+            SipsMatcher.consume_p(fsm)
+            assert SipsMatcher.consume_s(fsm) == :got_sips
+          end
+
+          test "it successfully consumes strings without a match" do
+            fsm = SipsMatcher.start_link
+            SipsMatcher.consume_s(fsm)
+            SipsMatcher.consume_i(fsm)
+            SipsMatcher.consume_p(fsm)
+            assert SipsMatcher.consume_not_s(fsm) == :starting
+          end
+
+      If you go ahead and run the tests, they fail because we don't have `consume_i`
+      functions, etc.  Let's define those and their corresponding state machine
+      handling functions for the GenFSM.Behaviour:
+
+          def consume_i(fsm) do
+            :gen_fsm.sync_send_event(fsm, :i)
+          end
+
+          def consume_p(fsm) do
+            :gen_fsm.sync_send_event(fsm, :p)
+          end
+
+          def got_s(:i, _from, state_data) do
+            { :reply, :got_si, :got_si, state_data }
+          end
+
+          def got_si(:p, _from, state_data) do
+            { :reply, :got_sip, :got_sip, state_data }
+          end
+
+          def got_sip(:s, _from, state_data) do
+            { :reply, :got_sips, :got_sips, state_data }
+          end
+          def got_sip(:not_s, _from, state_data) do
+            { :reply, :starting, :starting, state_data }
+          end
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Hey...
+
+          def consume_i(fsm) do
+            :gen_fsm.sync_send_event(fsm, :i)
+          end
+
+          def consume_p(fsm) do
+            :gen_fsm.sync_send_event(fsm, :p)
+          end
+
+          def got_s(:i, _from, state_data) do
+            { :reply, :got_si, :got_si, state_data }
+          end
+
+          def got_si(:p, _from, state_data) do
+            { :reply, :got_sip, :got_sip, state_data }
+          end
+
+          def got_sip(:s, _from, state_data) do
+            { :reply, :got_sips, :got_sips, state_data }
+          end
+          def got_sip(:not_s, _from, state_data) do
+            { :reply, :starting, :starting, state_data }
+          end
+
+      If you run the tests now, they should pass.  We can also add a test real quick
+      to verify that after consuming 'sips', it can successfully consume anything else
+      and stay in the successfully accepting state (`got_sips`).  Let's see what that
+      looks like:
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Hey...
+
+          test "it can't fall out of the `got_sips` state" do
+            fsm = SipsMatcher.start_link
+            SipsMatcher.consume_s(fsm)
+            SipsMatcher.consume_i(fsm)
+            SipsMatcher.consume_p(fsm)
+            SipsMatcher.consume_s(fsm)
+            assert SipsMatcher.consume_i(fsm) == :got_sips
+          end
+
+      If you run the tests, it fails because it expects a `got_sips` function to be
+      defined for the GenFSM.Behaviour.  Let's define that:
+
+          def got_sips(_, _from, state_data) do
+            { :reply, :got_sips, :got_sips, state_data }
+          end
+
+      Go ahead and run the tests, and they'll pass.
+
+%section
+  %h1 Finite State Machines
+  %h2 Summary
+  %aside.notes
+    :markdown
+      It would also be nice to know at what point in the input string the first
+      occurrence of `sips` happened at.  I'll leave that as an exercise for you,
+      because this is already going to take longer than our ideal episode length.
+
+      If you're going to do it, I'd suggest tracking the number of characters
+      encountered, incrementing it at each step regardless.  Then you'd track the
+      first `s` you ran into in an `occurence` field, and only update that field (to
+      match the `number_of_characters` field) in the transition from `starting` to
+      `got_s`.
+
+      In today's episode, we covered the basics of Finite State Machines, saw how to
+      implement one with GenFSM.Behaviour as well as how to put a nicer face on it,
+      and drove our implementation with tests.  I also gave you some homework, and if
+      you follow through with it I'd love to see what it looks like :)  See you soon!
+

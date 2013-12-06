@@ -19,9 +19,9 @@
 
   %aside.notes
     :markdown
-      So the main points we're going to cover are:
+      So the main points we're going to cover are: [advance]
 
-      List Compreshensions [advance]
+      List Comprehensions [advance]
 
       Records [advance]
 
@@ -70,7 +70,10 @@
   %pre.fragment
     %code
       :preserve
-        iex(13)> lc x inlist [1, 3, 5, 7, 9], y inlist [2, 4, 6, 8, 10], rem((x*y)-1, 9) == 0, do: [x, y]
+        iex(13)> lc x inlist [1, 3, 5, 7, 9],
+                    y inlist [2, 4, 6, 8, 10],
+                    rem((x*y)-1, 9) == 0,
+                    do: [x, y]
         [[1, 10], [5, 2], [7, 4]]
   %aside.notes
     :markdown
@@ -201,10 +204,10 @@
           # Make a new one, two different ways:
           dude = NewRecord.new first_name: "Dude"
           bro = NewRecord[first_name: "Bro"]
-          dude.first_name
-          dude.last_name
-          bro.first_name
-          bro.last_name
+          dude.first_name #=> "Dude"
+          dude.last_name  #=> "Dudington"
+          bro.first_name  #=> "Bro"
+          bro.last_name   #=> "Dudington"
 
       (back to the slides)
 
@@ -222,16 +225,16 @@
           end
         end
         guy = Person.new first_name: "Guy"
-        guy.name
+        guy.name #=> "Guy Dudington"
   %pre.fragment
     %code
       :preserve
-        Person.name(guy)
+        Person.name(guy) #=> "Guy Dudington"
   %pre.fragment
     %code
       :preserve
         fake_person = {Person, "fake", "person"}
-        fake_person.name
+        fake_person.name #=> "fake person"
   %aside.notes
     :markdown
       This looks a lot like classes/objects in Ruby - state and behaviour as one.
@@ -518,5 +521,190 @@
       [advance]
 
       We're not going to talk about it a ton, I just want to cover it briefly as a
-      concept.  Recursive functions call themselves again.  For instance, we might
-      write a recursive function to find the 
+      concept.  Recursive functions call themselves again.  To show this off, we'll
+      just write a recursive function that can sum a list of numbers.
+
+%section
+  %h1 Recursion
+  %pre
+    %code
+      :preserve
+        def sum_list(list) do
+          sum_list(list, 0)
+        end
+        def sum_list([next|rest], accum) do
+          sum_list(rest, accum + next)
+        end
+        def sum_list([], accum) do
+          accum
+        end
+  %aside.notes
+    :markdown
+      So here's a basic recursive function.  It's expected to be used in the first form,
+      that takes a single argument.  Internally, it then calls its second form, which takes
+      a list and an accumulator, where the accumulator is just accumulating the calculation
+      as we go.  Finally, it has a pathological form that says "we're done with this
+      calculation" and just returns its accumulator.
+
+      We just pop the next item off of the list, add it to the accumulator, and then call
+      `sum_list` on the remainder, updating the accumulator with the next step in the
+      calculation.  Eventually we've popped all of the items off of the list, and so we're
+      done calculating and just return it.
+
+      This is the core principle you'll follow in your recursive functions.  Also of note
+      is that Elixir and Erlang support Tail Call Optimization, which basically means that
+      if the last expression in a function is the recursive call to itself, it will not
+      require an increasing stack size to handle the calculation.  If you tried to do this
+      type of recursion in Ruby, you'd run into Stack Overflow errors as there'd be a new
+      frame on the stack for each iteration of the function.
+%section
+  %h1 Processes
+  %ul
+    %li.fragment What are processes
+    %li.fragment Playing with processes
+    %li.fragment Encapsulating state in a process
+
+  %aside.notes
+    :markdown
+      Alright, so on to processes. We're going to quickly cover [advance]
+
+      What they are.  [advance]
+
+      We're going to play with them a bit live [advance]
+
+      And we're going to look at encapsulating state in a process.  Let's get started [advance]
+%section
+  %h1 Processes
+  %h2 What they are
+  %ul
+    %li.fragment Elixir's unit of concurrency
+    %li.fragment lightweight - not OS processes
+    %li.fragment very often used the same way that objects are in ruby, etc.
+    %li.fragment Each process is garbage collected on its own, so there's never a GC 'stop the world' situation
+  %aside.notes
+    :markdown
+      Erlang is a concurrency-oriented programming language, and consequently so is
+      Elixir. [advance]
+      
+      Its unit of concurrency is the process [advance]
+      
+      (which has nothing to do with an Operating System process). [advance]
+      
+      If you've heard people talking about the Actor Model, this is what they're talking
+      about. [advance]
+
+      Processes share no memory with one another, and can only communicate with each other
+      via asynchronous messages.  They're each garbage collected independently, so there's
+      never going to be a 'stop the world' GC like you'd have in Java, Ruby, etc.
+%section
+  %h1 Processes
+  %h2 Playing with them
+
+  %aside.notes
+    :markdown
+      Since Elixir runs on top of the Erlang VM, it also supports concurrency via
+      processes.  Let's see what that looks like.
+      
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      We'll go ahead and generate a new project:
+
+          mix new process_playground && cd process_playground
+
+      Let's explore processes via tests.  Let's open up
+      `test/ping_test.exs` and add the following:
+
+          defmodule PingTest do
+            use ExUnit.Case
+
+            test "it responds to a pong with a ping" do
+              ping = spawn_link(Ping, :start, [])
+              ping &lt;- {:pong, self}
+              assert_receive {:ping, ping}
+            end
+          end
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      - Here is a test for a ping process.  This process responds to any message of the
+        form `{:pong, pid}` by sending a message to that pid of the form `{:ping,
+        self}` where self is its own pid, or Process ID.
+      - `spawn_link` is used to spawn a new process and link it to the current
+        process.  This just means that when the Ping process dies, the current process
+        will be notified.  The return from `spawn_link` is the pid of the spawned
+        process.
+      - Let's go ahead and run this test.  You'll notice it failing pretty
+        immediately, as it has no idea what Ping is.  We'll just add the module and
+        see what the next error message is.
+      - Now it's complaining that there's no `start` function, so we'll add that but
+        it'll be empty.  Go ahead and run the tests again, and it should fail the
+        assertion.  This is because we didn't send anything matching the pattern it
+        was looking for.
+      - Now we'll learn about `receive`.  This is known as selective receive.  It
+        accepts a series of potential patterns that can match messages in the
+        process's mailbox, and provides a function body that is run for the next message
+        in the mailbox that matches the appropriate pattern.
+      - hack hack hack till it's green.
+
+%section
+  %h1 LIVE LIVE LIVE LIVE LIVE
+  %h1 CODING CODING CODING
+  %h1 ZOMG ZOMG ZOMG ZOMG
+  %aside.notes
+    :markdown
+      Now I mentioned mailboxes a couple of times there.  They're a big part of the
+      actor model.  A mailbox is exactly what it sounds like - messages for a given
+      process get placed into its mailbox when they're delivered asynchronously, and
+      the process can handle its messages with selective receive in whichever order it
+      prefers.
+
+      Finally, let's ensure that the ping server can handle more than one message.
+      We'll do this by calling a function that will recursively call itself after
+      handling each message sent to it.  I traditionally call this function `await`,
+      for what it's worth.
+
+      Let's go ahead and move Ping into its own file under lib, and make a new
+      `pong_test.exs` file.  We'll copy in the Ping test, and we'll go through the
+      same process really quickly.
+
+%section
+  %h1 Processes
+  %h2 Encapsulating State
+  %aside.notes
+    :markdown
+      A very common pattern, and one of the most powerful that Erlang and Elixir offer
+      in my opinion, enables you to encapsulate state into a process in a way that
+      makes it behave very much like an object in a traditional object oriented
+      programming language.  That is, it has its own behaviour and state in one place.
+      The pattern involves passing state into the `await` function from start, and
+      then passing the state (potentially modified) into the recursive calls to await.
+      Let's see what that would look like.  We'll make pong keep track of how many
+      times it's been called, and it will print that out each time it responds.
+
+      hack hack hack
+
+      Alright, now that that's done we can, of course, wire Ping and Pong into one
+      another and just sit back as our actors chatter among themselves autonomously.
+      It's as easy as:
+
+          ping = spawn_link(Ping, :start, [])
+          pong = spawn_link(Pong, :start, [])
+          ping &lt;- {:pong, pong}
+%section
+  %h1 Processes
+  %h2 Summary
+  %aside.notes
+    :markdown
+      Alright, that's it.  We've covered what processes are, how to spawn them, and
+      how to communicate with them.  We also learned a pattern for encapsulating
+      state in a process, which is one of my favorite tricks.  That wraps up the
+      Introduction to Elixir part of this talk, so let's take a decent length break.
+      When you come back, we'll dig into using OTP with Elixir.
