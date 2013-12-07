@@ -1,3 +1,0 @@
-# FridgeServer
-
-** TODO: Add description **
