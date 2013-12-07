@@ -78,7 +78,7 @@ Since it's a comically long talk, it's broken up into the following sections:
 - Introduction to OTP with Elixir
   - Servers [15 minutes]
   - Finite State Machines [20 minutes]
-  - GenEvent
+  - GenEvent [15 minutes]
   - Supervisors
     - Basic
     - Adding Persistent State (let it crash...but don't forget stuff)

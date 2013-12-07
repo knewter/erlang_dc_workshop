@@ -6,7 +6,7 @@
       Now we're going to talk about a core concept in building systems in the Elixir
       Way - "Let it crash." [advance]
 
-      That is, don't concern youreself with keeping your code
+      That is, don't concern yourself with keeping your code
       from crashing, just make sure that the system keeps running if something bad
       happens.
 
@@ -25,7 +25,7 @@
   %h1 ZOMG ZOMG ZOMG ZOMG
   %aside.notes
     :markdown
-      Hey...
+      So we're going to start out by building a very basic server to manage a list.
 
           mix new supervised_list_server
           cd supervised_list_server
@@ -187,7 +187,8 @@
             end
           end
 
-      Now open up `iex -S mix` and try something very similar to what you did before:
+      Now open up `iex -S mix` and try something very similar to what you did before...
+      the only difference is that we use the ListSupervisor to start the List:
 
           ListSupervisor.start_link
           ListServer.add "book"
@@ -234,9 +235,9 @@
       sound.
 
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Supervision Tree](./images/supervision_tree.png)
   %aside.notes
     :markdown
       Alright, now that we know what we're trying to do, let's implement it.  Open up
@@ -246,9 +247,9 @@
             use Supervisor.Behaviour
 
             def start_link do
-              result = {:ok, sup} = :supervisor.start_link(__MODULE__, [])
+              {:ok, sup} = :supervisor.start_link(__MODULE__, [])
               start_workers(sup)
-              result
+              {:ok, sup}
             end
 
             def start_workers(sup) do
@@ -265,14 +266,14 @@
           end
 
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Supervision Tree](./images/supervision_tree.png)
   %aside.notes
     :markdown
 
       Here, we need to get the pid of the ListData worker, and pass that on to the
-      ListSubSupervisor, so we had to manage stating the children of the supervisor
+      ListSubSupervisor, so we had to manage starting the children of the supervisor
       ourselves, rather than allowing the call to `supervise` to handle it for us.
       Let's see what ListData is going to look like.  Open up `lib/list_data.ex`:
 
@@ -307,9 +308,9 @@
           end
 
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Supervision Tree](./images/supervision_tree.png)
   %aside.notes
     :markdown
 
@@ -331,9 +332,9 @@
           end
 
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Supervision Tree](./images/supervision_tree.png)
   %aside.notes
     :markdown
 
@@ -400,9 +401,9 @@
             end
           end
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Supervision Tree](./images/supervision_tree.png)
   %aside.notes
     :markdown
       So we had to tweak quite a few things, just to make sure we tracked the
@@ -426,6 +427,13 @@
 %section
   %h1 Supervisors
   %h2 Summary
+  :markdown
+    ![Supervision Tree](./images/supervision_tree.png)
   %aside.notes
     :markdown
-      That's it, we're done, go home :)
+      Alright, so in this section we covered what Supervision Behaviour was, how to
+      use it to keep a server up, and how to leverage the Let It Crash philosophy to make
+      sure our state survived a crash.  We also got a look at registering a server
+      with an atom for a name.
+%section
+  %h1 Questions?

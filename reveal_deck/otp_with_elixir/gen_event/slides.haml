@@ -1,6 +1,13 @@
 %section
   %h1 GenEvent
-  %h2.fragment Event Handling Behaviour
+  .fragment
+    %h2 Event Handling Behaviour
+    %pre
+      %code
+        :preserve
+          defmodule Something do
+            use GenEvent.Behaviour
+          end
   %aside.notes
     :markdown
       GenEvent is "a behaviour module for implementing event handling functionality." [advance]
@@ -214,6 +221,9 @@
       event handler carries its own state around with it inside your process.  I'm not
       sure why exactly, but it just seems like a very neat way to define this sort of
       thing.
+
+%section
+  %h1 Questions?
 
 %section
   %h1 Resources
