@@ -28,6 +28,12 @@
       Let's get started. [advance]
 %section
   %h1 GenServer
+  %pre
+    %code
+      :preserve
+        defmodule Something do
+          use GenServer.Behaviour
+        end
   %aside.notes
     :markdown
       We're going to start out looking at GenServer, which stands for "Generic
@@ -132,7 +138,6 @@
             {:reply, {:ok, item}, items}
           end
 
-      ## Using GenServer.Behaviour
       Here, we've cheated a bit.  We just claim to have the item that's attempting to
       be taken out of the fridge, without even checking if it's available.  However,
       this is sufficient to pass the next test.  In order to pass the final two tests,

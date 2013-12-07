@@ -19,6 +19,12 @@
 %section
   %h1 Finite State Machines
   %h2 What they are
+  %pre
+    %code
+      :preserve
+        defmodule Something do
+          use GenFSM.Behaviour
+        end
   %p A means of modelling some computation.
   %ul
     %li.fragment It can be in one of a limited number of states;
@@ -38,6 +44,11 @@
       developers change a black box, scary-looking regular expression from doom into a
       tight, meaningful class in which the error in their logic became glaringly
       obvious.
+
+      I've also used them to model a financial transaction in a customer system, where there
+      were multiple external systems that had to be updated in response to a charge being created
+      in our system, and it had to happen in very specifically ordered ways, with logic that
+      could handle various potential error cases.
 %section
   %h1 Finite State Machines
   %h2 Our example FSM
@@ -102,9 +113,9 @@
       they would fail as there's no `SipsMatcher` module, so let's go ahead and define
       that module at the top of the file.
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Example FSM](./images/diagram.png)
   %aside.notes
     :markdown
       Here...
@@ -138,14 +149,52 @@
       could find.
 
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Example FSM](./images/diagram.png)
   %aside.notes
     :markdown
       Anyway, this won't work yet because we aren't supporting the GenFSM expected
       behaviours yet.  Let's see what that looks like:
 
+          # GenFSM API
+          def init(_) do
+            { :ok, :starting, [] }
+          end
+
+          def starting(:s, _from, state_data) do
+            { :reply, :got_s, :got_s, state_data }
+          end
+          def starting(:not_s, _from, state_data) do
+            { :reply, :starting, :starting, state_data }
+          end
+
+      Here we're defining an `init/1` function, which is called when the FSM is
+      initialized, and then we're defining two functions for handling different
+      transitions out of the `starting` state.  In those transitions, we're replying
+      to the caller with the next state, then specifying the next state and passing on
+      our (unused, really) `state_data`.  You can find the full range of return values
+      that GenFSM knows how to deal with in the docs for GenFSM.Behaviour.
+
+      The return values for these functions are replies - they consist of a tuple
+      containing the atom `:reply`, the reply to send, the new state that the FSM should
+      be in next, and the state data (which we aren't really making use of here)
+
+      Also, it's worth noting that the state machine responds to inbound messages by
+      invoking a function with the same name as the state machine's current state - this
+      is how we're describing the 'arrows out of the state' in the diagram.
+
+      Let's go ahead and run our tests, and they should be passing.
+
+      In the interest of time, I'm only going to follow up with two more tests - one
+      for success, and one for failure.  Let's see what that looks like:
+
+%section
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Example FSM](./images/diagram.png)
+  %aside.notes
+    :markdown
           test "it successfully consumes the string 'sips'" do
             fsm = SipsMatcher.start_link
             SipsMatcher.consume_s(fsm)
@@ -165,33 +214,10 @@
       If you go ahead and run the tests, they fail because we don't have `consume_i`
       functions, etc.  Let's define those and their corresponding state machine
       handling functions for the GenFSM.Behaviour:
-
-          def consume_i(fsm) do
-            :gen_fsm.sync_send_event(fsm, :i)
-          end
-
-          def consume_p(fsm) do
-            :gen_fsm.sync_send_event(fsm, :p)
-          end
-
-          def got_s(:i, _from, state_data) do
-            { :reply, :got_si, :got_si, state_data }
-          end
-
-          def got_si(:p, _from, state_data) do
-            { :reply, :got_sip, :got_sip, state_data }
-          end
-
-          def got_sip(:s, _from, state_data) do
-            { :reply, :got_sips, :got_sips, state_data }
-          end
-          def got_sip(:not_s, _from, state_data) do
-            { :reply, :starting, :starting, state_data }
-          end
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Example FSM](./images/diagram.png)
   %aside.notes
     :markdown
       Hey...
@@ -225,9 +251,9 @@
       looks like:
 
 %section
-  %h1 LIVE LIVE LIVE LIVE LIVE
-  %h1 CODING CODING CODING
-  %h1 ZOMG ZOMG ZOMG ZOMG
+  %h1 LIVE CODING ZOMG
+  :markdown
+    ![Example FSM](./images/diagram.png)
   %aside.notes
     :markdown
       Hey...
@@ -253,11 +279,14 @@
 %section
   %h1 Finite State Machines
   %h2 Summary
+  :markdown
+    ![Example FSM](./images/diagram.png)
   %aside.notes
     :markdown
       It would also be nice to know at what point in the input string the first
-      occurrence of `sips` happened at.  I'll leave that as an exercise for you,
-      because this is already going to take longer than our ideal episode length.
+      occurrence of `sips` happened.  I'll leave that as an exercise for you,
+      but the bit about `state_data` that we aren't fiddling with should be highly
+      interesting :)
 
       If you're going to do it, I'd suggest tracking the number of characters
       encountered, incrementing it at each step regardless.  Then you'd track the
@@ -265,8 +294,8 @@
       match the `number_of_characters` field) in the transition from `starting` to
       `got_s`.
 
-      In today's episode, we covered the basics of Finite State Machines, saw how to
+      So pretty quickly, we covered the basics of Finite State Machines, saw how to
       implement one with GenFSM.Behaviour as well as how to put a nicer face on it,
       and drove our implementation with tests.  I also gave you some homework, and if
-      you follow through with it I'd love to see what it looks like :)  See you soon!
+      you follow through with it I'd love to see what it looks like :)
 

@@ -76,8 +76,8 @@ Since it's a comically long talk, it's broken up into the following sections:
     - Recursion
     - Processes
 - Introduction to OTP with Elixir
-  - Servers
-  - Finite State Machines
+  - Servers [15 minutes]
+  - Finite State Machines [20 minutes]
   - GenEvent
   - Supervisors
     - Basic
