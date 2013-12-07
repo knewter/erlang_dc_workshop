@@ -30,6 +30,16 @@ And in another, which goes on the projector:
 tmux a -t examples
 ```
 
+- Introduction to Elixir
+  - Basic Elixir [25 minutes]
+  - Testing [20 minutes]
+  - Slightly less basic Elixir (but still pretty basic) [25 minutes]
+- Introduction to OTP with Elixir
+  - Servers [15 minutes]
+  - Finite State Machines [20 minutes]
+  - GenEvent [15 minutes]
+  - Supervisors [20 minutes]
+
 ## Outline
 
 Since it's a comically long talk, it's broken up into the following sections:
@@ -79,7 +89,7 @@ Since it's a comically long talk, it's broken up into the following sections:
   - Servers [15 minutes]
   - Finite State Machines [20 minutes]
   - GenEvent [15 minutes]
-  - Supervisors
+  - Supervisors [20 minutes]
     - Basic
     - Adding Persistent State (let it crash...but don't forget stuff)
 - Building a project with Elixir
