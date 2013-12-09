@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Introduction to Elixir - Slightly Less Basic Elixir</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Josh Adams">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<section>
+  <h1>Introduction to Elixir</h1>
+  <h2>Slightly Less Basic Elixir</h2>
+  <p>But still pretty basic...</p>
+  <aside class='notes'>
+    <p>Alright, so now we&#39;re going to move on to some slightly more advanced bits
+    of the basics of Elixir, if that makes any sense.</p>
+  </aside>
+</section>
+<section>
+  <h1>Slightly Less Basic Elixir</h1>
+  <ul>
+    <li class='fragment'>List Comprehensions</li>
+    <li class='fragment'>Records</li>
+    <li class='fragment'>Pipe Operator</li>
+    <li class='fragment'>Recursion</li>
+    <li class='fragment'>Processes</li>
+  </ul>
+  <aside class='notes'>
+    <p>So the main points we&#39;re going to cover are: [advance]</p>
+    
+    <p>List Comprehensions [advance]</p>
+    
+    <p>Records [advance]</p>
+    
+    <p>Pipe Operator [advance]</p>
+    
+    <p>Recursion [advance]</p>
+    
+    <p>and Processes [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>List Comprehensions</h1>
+  <h2>What are they for?</h2>
+  <pre class='fragment'><code>iex(1)> lc x inlist [1, 2, 3, 4], do: x*2&#x000A;[2, 4, 6, 8]&#x000A;&#x000A;iex(3)> lc x inlist [1, 2, 3, 4], do: [x, x*2]&#x000A;[[1, 2], [2, 4], [3, 6], [4, 8]]&#x000A;&#x000A;iex(6)> lc x inlist [1, 2, 3, 4], rem(x, 2) == 0, do: x&#x000A;[2, 4]&#x000A;</code></pre>
+  <aside class='notes'>
+    <p>The general idea behind List Comprehensions is to create a list from one or more
+    other lists.  Let&#39;s look at some basic examples:  [advance]</p>
+    
+    <p>From this we get the general principle - for each x in some list, return an
+    element for a new list.  We also might create a filter to filter out some
+    potential elements.  From what we&#39;ve seen so far, this doesn&#39;t seem like much
+    more than some syntactic sugar for mapping lists.  It gets better though :)</p>
+  </aside>
+</section>
+<section>
+  <h1>List Comprehensions</h1>
+  <h2>Combining Multiple Lists</h2>
+  <pre class='fragment'><code>iex(1)> lc x inlist [1, 2, 3], y inlist [4, 5, 6], do: x*y&#x000A;[4, 5, 6, 8, 10, 12, 12, 15, 18]</code></pre>
+  <pre class='fragment'><code>iex(3)> lc x inlist [1, 2, 3], y inlist [4, 5, 6], do: {x, y}&#x000A;[{1, 4}, {1, 5}, {1, 6}, {2, 4}, {2, 5}, {2, 6}, {3, 4}, {3, 5}, {3, 6}]</code></pre>
+  <pre class='fragment'><code>iex(13)> lc x inlist [1, 3, 5, 7, 9],&#x000A;            y inlist [2, 4, 6, 8, 10],&#x000A;            rem((x*y)-1, 9) == 0,&#x000A;            do: [x, y]&#x000A;[[1, 10], [5, 2], [7, 4]]</code></pre>
+  <aside class='notes'>
+    <p>Let&#39;s look at combining a couple of lists: [advance]</p>
+    
+    <p>So what happened there?  For each x in the first list, it generated an element
+    for the output list that consisted of that x * each y in the list.  Of course,
+    the output for a list comprehension can get more interesting.</p>
+    
+    <p>For instance, you might want to generate a list of tuples: [advance]</p>
+    
+    <p>You can of course get a bit fancy.  Let&#39;s find all the numbers based on the
+    first five odd numbers and the first five even numbers where the product minus 1
+    is divisible by 9: [advance]</p>
+    
+    <p>This is, of course, a contrived example, but it was a pretty comprehensive use
+    of the features provided by list comprehensions.  Let&#39;s go a little bit further.
+    Let&#39;s test drive a module that will generate a deck of cards.</p>
+    
+    <p>I&#39;ve already got a test case shell for this.  We&#39;ll pull it up and see about
+    making the tests pass.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>I&#39;ve gone ahead and started a test shell case for this.</p>
+    
+    <pre><code>cp -r elixir_card_deck_prep_project elixir_card_deck&#x000A;cd elixir_card_deck&#x000A;</code></pre>
+    
+    <p>Let&#39;s go ahead and look at the test suite to see what this is going to do for
+    us:</p>
+    
+    <pre><code>vim text/elixir_card_deck_test.exs&#x000A;</code></pre>
+    
+    <p>Alright, so it&#39;s pretty basic.  Basically, we want to generate a deck of cards.</p>
+    
+    <p>We&#39;re going to use List Comprehensions, as you might have guessed.  Let&#39;s focus
+    on making the first test pass:</p>
+    
+    <pre><code>defmodule ElixirCardDeck do&#x000A;  use Application.Behaviour&#x000A;&#x000A;  # See http://elixir-lang.org/docs/stable/Application.Behaviour.html&#x000A;  # for more information on OTP Applications&#x000A;  def start(_type, _args) do&#x000A;    ElixirCardDeck.Supervisor.start_link&#x000A;  end&#x000A;&#x000A;  def make_deck do&#x000A;    lc suit inlist suits, value inlist values, do: {:card, value, suit}&#x000A;  end&#x000A;&#x000A;  defp suits do&#x000A;    [:spades]&#x000A;  end&#x000A;&#x000A;  defp values do&#x000A;    [:a]&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>So that gets one  of the tests passing very quickly.  The other one doesn&#39;t look
+    very difficult to get done here either.</p>
+    
+    <pre><code>defmodule ElixirCardDeck do&#x000A;  use Application.Behaviour&#x000A;&#x000A;  # See http://elixir-lang.org/docs/stable/Application.Behaviour.html&#x000A;  # for more information on OTP Applications&#x000A;  def start(_type, _args) do&#x000A;    ElixirCardDeck.Supervisor.start_link&#x000A;  end&#x000A;&#x000A;  def make_deck do&#x000A;    lc value inlist values, suit inlist suits, do: {:card, value, suit}&#x000A;  end&#x000A;&#x000A;  defp suits do&#x000A;    [:spades, :clubs, :diamonds, :hearts]&#x000A;  end&#x000A;&#x000A;  defp values do&#x000A;    [:a, 2, 3, 4, 5, 6, 7, 8, 9, 10, :j, :q, :k]&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>Alright, run the tests and they pass.  That&#39;s basically it - building a deck of
+    cards with list comprehensions in Elixir is mostly a one liner. That&#39;s it for
+    List Comprehensions. (back to the slides)</p>
+  </aside>
+</section>
+<section>
+  <h1>Records</h1>
+  <aside class='notes'>
+    <p>In Elixir, it is common to represent structured data using Records.  Let&#39;s have
+    a look at the basics of records, and see how they can be used in pattern matching.
+    [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Records</h1>
+  <h2>Defining Them</h2>
+  <pre class='fragment'><code>defrecord NewRecord, first_name: nil, last_name: "Dudington"&#x000A;# Make a new one, two different ways:&#x000A;dude = NewRecord.new first_name: "Dude"&#x000A;bro = NewRecord[first_name: "Bro"]&#x000A;dude.first_name&#x000A;dude.last_name&#x000A;bro.first_name&#x000A;bro.last_name&#x000A;</code></pre>
+  <aside class='notes'>
+    <p>You can define records easily using defrecord.  It returns a tuple representing the
+    record: [advance]</p>
+    
+    <p>(do the following in an iex)</p>
+    
+    <pre><code>defrecord NewRecord, first_name: nil, last_name: &quot;Dudington&quot;&#x000A;# Make a new one, two different ways:&#x000A;dude = NewRecord.new first_name: &quot;Dude&quot;&#x000A;bro = NewRecord[first_name: &quot;Bro&quot;]&#x000A;dude.first_name #=&gt; &quot;Dude&quot;&#x000A;dude.last_name  #=&gt; &quot;Dudington&quot;&#x000A;bro.first_name  #=&gt; &quot;Bro&quot;&#x000A;bro.last_name   #=&gt; &quot;Dudington&quot;&#x000A;</code></pre>
+    
+    <p>(back to the slides)</p>
+    
+    <p>Records are just modules - nothing more, nothing less.  You can define them in the
+    block style, and define functions on them as well: [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Records</h1>
+  <h2>Defining Them</h2>
+  <pre><code>defrecord Person, first_name: nil, last_name: "Dudington" do&#x000A;  def name(record) do&#x000A;    "#{record.first_name} #{record.last_name}"&#x000A;  end&#x000A;end&#x000A;guy = Person.new first_name: "Guy"&#x000A;guy.name #=> "Guy Dudington"</code></pre>
+  <pre class='fragment'><code>Person.name(guy) #=> "Guy Dudington"</code></pre>
+  <pre class='fragment'><code>fake_person = {Person, "fake", "person"}&#x000A;fake_person.name #=> "fake person"</code></pre>
+  <aside class='notes'>
+    <p>This looks a lot like classes/objects in Ruby - state and behaviour as one.
+    However, it&#39;s generally frowned upon to do this, and things will likely be
+    better if, for instance, you were just to define a PersonPrinter module that had
+    functions meant to operate upon a Person record.  Alternatively, if you just used
+    the module in the more traditional manner (rather than via object-style dots) by doing
+    something like this: [advance]</p>
+    
+    <p>Records are really just syntactic sugar on tuples.  You can see this by creating
+    the appropriate kind of tuple, and seeing it behave as if it were a record
+    &quot;instance&quot;: [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Records</h1>
+  <h2>Pattern Matching</h2>
+  <pre class='fragment'><code>defmodule PersonPrinter do&#x000A;  def say_hello(Person[first_name: first, last_name: "Dudington"]) do&#x000A;    "hey it's my brother, #{first}!"&#x000A;  end&#x000A;&#x000A;  def say_hello(Person[first_name: first]) do&#x000A;    "hello, #{first}"&#x000A;  end&#x000A;end&#x000A;&#x000A;bro = Person.new first_name: "Bro", last_name: "Dudington"&#x000A;stranger = Person.new first_name: "Stranger", last_name: "von Strangehands"&#x000A;PersonPrinter.say_hello(bro)      #=> "hey it's my brother, Bro!"&#x000A;PersonPrinter.say_hello(stranger) #=> "hello, Stranger"</code></pre>
+  <aside class='notes'>
+    <p>It&#39;s easy and convenient to pattern match on records.  Here&#39;s an example: [advance]</p>
+    
+    <p>You can see here that different function bodies match based on the content of the
+    record that&#39;s passed as an argument.  This is the power of Pattern Matching as
+    brought to bear on Records.</p>
+  </aside>
+</section>
+<section>
+  <h1>Pipe Operator</h1>
+  <h2>|&gt;</h2>
+  <pre class='fragment'><code>ps ax|grep vim|awk '{ print $1 }'</code></pre>
+  <aside class='notes'>
+    <p>The Pipe Operator is used to quickly and easily create a pipeline of functions.
+    It&#39;s an extremely common thing you run into in various programming contexts.</p>
+    
+    <p>In Unix, a pipeline might look something like this: [advance]</p>
+    
+    <p>This would list the processes out, grep the resulting lines for the string <code>vim</code>,
+    and print their PID.  There are substantially better ways to accomplish this, but
+    it serves as a pretty comprehensible example.</p>
+    
+    <p>The reason Unix has a means of piping the output of one program into the input of
+    another is that it&#39;s an exceedingly useful way of composing small operations into
+    large, useful expressions.</p>
+    
+    <p>It turns out that that&#39;s most of what functional programming is, so you&#39;d expect
+    the pipe operator to be very useful, and you&#39;d be right.  For the record, Elixir
+    cribbed this from F#.</p>
+    
+    <p>In Elixir, the pipe operator takes the output of the expression on the left of
+    it, and feeds it in as the first argument to the function on the right of it.
+    Let&#39;s see what that looks like with some more live coding.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>For our example app, we&#39;ll take the output of our <code>ps</code> command as input, and
+    we&#39;ll generate functions to serve as <code>grep</code> and <code>awk</code> for building out the same
+    pipeline.</p>
+    
+    <p>We&#39;ll generate a new application:</p>
+    
+    <pre><code>mix new pipe_operator_playground&#x000A;cd pipe_operator_playground&#x000A;</code></pre>
+    
+    <p>Now let&#39;s go modify the existing test:</p>
+    
+    <pre><code>defmodule PipeOperatorPlaygroundTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  test &quot;ps_ax outputs some processes&quot; do&#x000A;  end&#x000A;&#x000A;  test &quot;grep(thing) returns lines that match &#39;thing&#39;&quot; do&#x000A;  end&#x000A;&#x000A;  test &quot;awk(1) splits on whitespace and returns the first column&quot; do&#x000A;  end&#x000A;&#x000A;  test &quot;the whole pipeline works&quot; do&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>So there&#39;s our rough shell.  Let&#39;s go ahead and start filling it in.</p>
+    
+    <pre><code>test &quot;ps_ax outputs some processes&quot; do&#x000A;  output = &quot;&quot;&quot;&#x000A;    PID TTY      STAT   TIME COMMAND&#x000A;   8544 ?        S      0:00 [kworker/u:1]&#x000A;  10919 pts/4    Sl+    0:14 vim 016_Pipe_Operator.markdown&#x000A;  10941 pts/5    Ss     0:00 -bash&#x000A;  13936 pts/5    Sl+    0:00 vim test/pipe_operator_playground_test.exs&#x000A;  14422 ?        S      0:00 sleep 3&#x000A;  &quot;&quot;&quot;&#x000A;  assert Unix.ps_ax == output&#x000A;end&#x000A;</code></pre>
+    
+    <p>Here we&#39;re just getting some basic test data in for our pipeline.  I just read
+    in the ps command and stripped most of it out.  We just want to assert that we
+    have a function, <code>Unix.ps_ax</code>, that outputs this data to get us started.  Let&#39;s
+    go ahead and make the module and corresponding function:</p>
+    
+    <pre><code>defmodule Unix do&#x000A;  def ps_ax do&#x000A;    &quot;&quot;&quot;&#x000A;      PID TTY      STAT   TIME COMMAND&#x000A;     8544 ?        S      0:00 [kworker/u:1]&#x000A;    10919 pts/4    Sl+    0:14 vim 016_Pipe_Operator.markdown&#x000A;    10941 pts/5    Ss     0:00 -bash&#x000A;    13936 pts/5    Sl+    0:00 vim test/pipe_operator_playground_test.exs&#x000A;    14422 ?        S      0:00 sleep 3&#x000A;    &quot;&quot;&quot;&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>We&#39;ll run the tests, and since we just copy-pasted the output of a function, I&#39;d
+    be flabbergasted if they didn&#39;t succeed.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Now that that&#39;s done with, let&#39;s fill in the next test:</p>
+    
+    <pre><code>test &quot;grep(thing) returns lines that match &#39;thing&#39;&quot; do&#x000A;  input = &quot;&quot;&quot;&#x000A;  foo&#x000A;  bar&#x000A;  thing foo&#x000A;  baz&#x000A;  thing qux&#x000A;  &quot;&quot;&quot;&#x000A;  output = [&quot;thing foo&quot;, &quot;thing qux&quot;]&#x000A;  assert Unix.grep(input, &#39;thing&#39;) == output&#x000A;end&#x000A;</code></pre>
+    
+    <p>Alright, here we&#39;re expecting to define a grep command that takes a regex of
+    some sort to filter its input.  Let&#39;s see what that looks like:</p>
+    
+    <pre><code>def grep(input, match) do&#x000A;  lines = String.split(input, &quot;\n&quot;)&#x000A;  Enum.filter(lines, fn(line) -&gt; Regex.match?(%r/#{match}/, line) end)&#x000A;end&#x000A;</code></pre>
+    
+    <p>This would, hilariously, be a bit shorter if we were to use a pipeline for it,
+    but we can always come back to that.  I&#39;m going to try to be laser-focused on
+    the actual pipeline we&#39;re building, for now, for illustrative purposes.</p>
+    
+    <p>Go ahead and run the tests, and they&#39;ll pass.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Let&#39;s see the next test:</p>
+    
+    <pre><code>test &quot;awk(1) splits on whitespace and returns the first column&quot; do&#x000A;  input = [&quot;foo bar&quot;, &quot;  baz    qux &quot;]&#x000A;  output = [&quot;foo&quot;, &quot;baz&quot;]&#x000A;  assert Unix.awk(input, 1) == output&#x000A;end&#x000A;</code></pre>
+    
+    <p>Alright, so here we&#39;re expecting to split on whitespace of some sort, and return
+    the column we ask for.  Easy enough, let&#39;s go ahead and implement it:</p>
+    
+    <pre><code>def awk(lines, column) do&#x000A;  Enum.map(lines, fn(line) -&gt;&#x000A;    stripped = String.strip(line)&#x000A;    columns = Regex.split(%r/ /, stripped, trim: true)&#x000A;    Enum.at(columns, column-1)&#x000A;  end)&#x000A;end&#x000A;</code></pre>
+    
+    <p>Run the tests, they should all pass.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Finally, let&#39;s see how we can glue these pieces together with the pipe operator,
+    which was the whole flipping point of this exercise, right?</p>
+    
+    <pre><code>test &quot;the whole pipeline works&quot; do&#x000A;  assert (Unix.ps_ax |&gt; Unix.grep(&#39;vim&#39;) |&gt; Unix.awk(1)) == [&quot;10919&quot;, &quot;13936&quot;]&#x000A;end&#x000A;</code></pre>
+    
+    <p>Go ahead and run the test, and it should just work.  That&#39;s what a pipeline&#39;s
+    good for - turning a whole lot of work into one small, easy to read piece.
+    Without the pipeline, that would have been written:</p>
+    
+    <pre><code>Unix.awk(Unix.grep(Unix.ps_ax, &#39;vim&#39;), 1)&#x000A;</code></pre>
+    
+    <p>Which is just awful to read, especially if you look at the distance between
+    &#39;awk&#39; and its argument specifying the column.</p>
+    
+    <p>Anyway, now that we&#39;ve played with the pipe a bit, let&#39;s clean up the rest of
+    the pieces of this code that could benefit from pipelines:</p>
+    
+    <pre><code>def grep(input, match) do&#x000A;  String.split(input, &quot;\n&quot;)&#x000A;    |&gt; Enum.filter(fn(line) -&gt; Regex.match?(%r/#{match}/, line) end)&#x000A;end&#x000A;&#x000A;def awk(lines, column) do&#x000A;  Enum.map(lines, fn(line) -&gt;&#x000A;    stripped = String.strip(line)&#x000A;    Regex.split(%r/ /, stripped, trim: true)&#x000A;      |&gt; Enum.at(column-1)&#x000A;  end)&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>You can see we can&#39;t easily pipeline through the <code>Regex.split</code> function.  This
+      is kind of untrue - we can use it, but since it doesn&#39;t take the input string as
+      the first argument, it looks exceedingly unwieldy.  Just to show you what this
+      looks like, let me show you a way I would <em>not</em> suggest:</p>
+    
+    <pre><code>  def awk(lines, column) do&#x000A;    Enum.map(lines, fn(line) -&gt;&#x000A;      String.strip(line)&#x000A;        |&gt; (&amp;Regex.split(%r/ /, &amp;1, trim: true)).()&#x000A;        |&gt; Enum.at(column-1)&#x000A;    end)&#x000A;  end&#x000A;</code></pre>
+    
+    <p>So yeah, that&#39;s technically a thing you can do, but don&#39;t.</p>
+  </aside>
+</section>
+<section>
+  <h1>Pipe Operator</h1>
+  <h2>Summary</h2>
+  <aside class='notes'>
+    <p>Alright, so we learned how to use the Pipe Operator to chain together functions
+    to form a composite function that performs a larger task using smaller,
+    lego-style functional pieces.</p>
+  </aside>
+</section>
+<section>
+  <h1>Recursion</h1>
+  <h2 class='fragment'>Recursion</h2>
+  <h3 class='fragment'>Recursion</h3>
+  <h4 class='fragment'>Recursion</h4>
+  <h3 class='fragment'>Recursion</h3>
+  <h2 class='fragment'>Recursion</h2>
+  <h1 class='fragment'>Recursion</h1>
+  <aside class='notes'>
+    <p>So let&#39;s talk about recursion [advance]</p>
+    
+    <p>[advance]
+    [advance]
+    [advance]
+    [advance]
+    [advance]</p>
+    
+    <p>We&#39;re not going to talk about it a ton, I just want to cover it briefly as a
+    concept.  Recursive functions call themselves again.  To show this off, we&#39;ll
+    just write a recursive function that can sum a list of numbers.</p>
+  </aside>
+</section>
+<section>
+  <h1>Recursion</h1>
+  <pre><code>def sum_list(list) do&#x000A;  sum_list(list, 0)&#x000A;end&#x000A;def sum_list([next|rest], accum) do&#x000A;  sum_list(rest, accum + next)&#x000A;end&#x000A;def sum_list([], accum) do&#x000A;  accum&#x000A;end</code></pre>
+  <aside class='notes'>
+    <p>So here&#39;s a basic recursive function.  It&#39;s expected to be used in the first form,
+    that takes a single argument.  Internally, it then calls its second form, which takes
+    a list and an accumulator, where the accumulator is just accumulating the calculation
+    as we go.  Finally, it has a pathological form that says &quot;we&#39;re done with this
+    calculation&quot; and just returns its accumulator.</p>
+    
+    <p>We just pop the next item off of the list, add it to the accumulator, and then call
+    <code>sum_list</code> on the remainder, updating the accumulator with the next step in the
+    calculation.  Eventually we&#39;ve popped all of the items off of the list, and so we&#39;re
+    done calculating and just return it.</p>
+    
+    <p>This is the core principle you&#39;ll follow in your recursive functions.  Also of note
+    is that Elixir and Erlang support Tail Call Optimization, which basically means that
+    if the last expression in a function is the recursive call to itself, it will not
+    require an increasing stack size to handle the calculation.  If you tried to do this
+    type of recursion in Ruby, you&#39;d run into Stack Overflow errors as there&#39;d be a new
+    frame on the stack for each iteration of the function.</p>
+  </aside>
+</section>
+<section>
+  <h1>Processes</h1>
+  <ul>
+    <li class='fragment'>What are processes</li>
+    <li class='fragment'>Playing with processes</li>
+    <li class='fragment'>Encapsulating state in a process</li>
+  </ul>
+  <aside class='notes'>
+    <p>Alright, so on to processes. We&#39;re going to quickly cover [advance]</p>
+    
+    <p>What they are.  [advance]</p>
+    
+    <p>We&#39;re going to play with them a bit live [advance]</p>
+    
+    <p>And we&#39;re going to look at encapsulating state in a process.  Let&#39;s get started [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Processes</h1>
+  <h2>What they are</h2>
+  <ul>
+    <li class='fragment'>Elixir's unit of concurrency</li>
+    <li class='fragment'>lightweight - not OS processes</li>
+    <li class='fragment'>very often used the same way that objects are in ruby, etc.</li>
+    <li class='fragment'>Each process is garbage collected on its own, so there's never a GC 'stop the world' situation</li>
+  </ul>
+  <aside class='notes'>
+    <p>Erlang is a concurrency-oriented programming language, and consequently so is
+    Elixir. [advance]</p>
+    
+    <p>Its unit of concurrency is the process [advance]</p>
+    
+    <p>(which has nothing to do with an Operating System process). [advance]</p>
+    
+    <p>If you&#39;ve heard people talking about the Actor Model, this is what they&#39;re talking
+    about. [advance]</p>
+    
+    <p>Processes share no memory with one another, and can only communicate with each other
+    via asynchronous messages.  They&#39;re each garbage collected independently, so there&#39;s
+    never going to be a &#39;stop the world&#39; GC like you&#39;d have in Java, Ruby, etc.</p>
+  </aside>
+</section>
+<section>
+  <h1>Processes</h1>
+  <h2>Playing with them</h2>
+  <aside class='notes'>
+    <p>Since Elixir runs on top of the Erlang VM, it also supports concurrency via
+    processes.  Let&#39;s see what that looks like.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>We&#39;ll go ahead and generate a new project:</p>
+    
+    <pre><code>mix new process_playground &amp;&amp; cd process_playground&#x000A;</code></pre>
+    
+    <p>Let&#39;s explore processes via tests.  Let&#39;s open up
+    <code>test/ping_test.exs</code> and add the following:</p>
+    
+    <pre><code>defmodule PingTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  test &quot;it responds to a pong with a ping&quot; do&#x000A;    ping = spawn_link(Ping, :start, [])&#x000A;    ping &amp;lt;- {:pong, self}&#x000A;    assert_receive {:ping, ping}&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <ul>
+    <li>Here is a test for a ping process.  This process responds to any message of the
+    form <code>{:pong, pid}</code> by sending a message to that pid of the form <code>{:ping,&#x000A;self}</code> where self is its own pid, or Process ID.</li>
+    <li><code>spawn_link</code> is used to spawn a new process and link it to the current
+    process.  This just means that when the Ping process dies, the current process
+    will be notified.  The return from <code>spawn_link</code> is the pid of the spawned
+    process.</li>
+    <li>Let&#39;s go ahead and run this test.  You&#39;ll notice it failing pretty
+    immediately, as it has no idea what Ping is.  We&#39;ll just add the module and
+    see what the next error message is.</li>
+    <li>Now it&#39;s complaining that there&#39;s no <code>start</code> function, so we&#39;ll add that but
+    it&#39;ll be empty.  Go ahead and run the tests again, and it should fail the
+    assertion.  This is because we didn&#39;t send anything matching the pattern it
+    was looking for.</li>
+    <li>Now we&#39;ll learn about <code>receive</code>.  This is known as selective receive.  It
+    accepts a series of potential patterns that can match messages in the
+    process&#39;s mailbox, and provides a function body that is run for the next message
+    in the mailbox that matches the appropriate pattern.</li>
+    <li>hack hack hack till it&#39;s green.</li>
+    </ul>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Now I mentioned mailboxes a couple of times there.  They&#39;re a big part of the
+    actor model.  A mailbox is exactly what it sounds like - messages for a given
+    process get placed into its mailbox when they&#39;re delivered asynchronously, and
+    the process can handle its messages with selective receive in whichever order it
+    prefers.</p>
+    
+    <p>Finally, let&#39;s ensure that the ping server can handle more than one message.
+    We&#39;ll do this by calling a function that will recursively call itself after
+    handling each message sent to it.  I traditionally call this function <code>await</code>,
+    for what it&#39;s worth.</p>
+    
+    <p>Let&#39;s go ahead and move Ping into its own file under lib, and make a new
+    <code>pong_test.exs</code> file.  We&#39;ll copy in the Ping test, and we&#39;ll go through the
+    same process really quickly.</p>
+  </aside>
+</section>
+<section>
+  <h1>Processes</h1>
+  <h2>Encapsulating State</h2>
+  <aside class='notes'>
+    <p>A very common pattern, and one of the most powerful that Erlang and Elixir offer
+    in my opinion, enables you to encapsulate state into a process in a way that
+    makes it behave very much like an object in a traditional object oriented
+    programming language.  That is, it has its own behaviour and state in one place.
+    The pattern involves passing state into the <code>await</code> function from start, and
+    then passing the state (potentially modified) into the recursive calls to await.
+    Let&#39;s see what that would look like.  We&#39;ll make pong keep track of how many
+    times it&#39;s been called, and it will print that out each time it responds.</p>
+    
+    <p>hack hack hack</p>
+    
+    <p>Alright, now that that&#39;s done we can, of course, wire Ping and Pong into one
+    another and just sit back as our actors chatter among themselves autonomously.
+    It&#39;s as easy as:</p>
+    
+    <pre><code>ping = spawn_link(Ping, :start, [])&#x000A;pong = spawn_link(Pong, :start, [])&#x000A;ping &amp;lt;- {:pong, pong}&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>Processes</h1>
+  <h2>Summary</h2>
+  <aside class='notes'>
+    <p>Alright, that&#39;s it.  We&#39;ve covered what processes are, how to spawn them, and
+    how to communicate with them.  We also learned a pattern for encapsulating
+    state in a process, which is one of my favorite tricks.  That wraps up the
+    Introduction to Elixir part of this talk, so let&#39;s take a decent length break.
+    When you come back, we&#39;ll dig into using OTP with Elixir.</p>
+  </aside>
+</section>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

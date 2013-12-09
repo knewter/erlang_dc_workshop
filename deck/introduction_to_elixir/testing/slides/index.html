@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Introduction to Elixir - Basic Elixir</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Josh Adams">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<section>
+  <h1>Introduction to Elixir</h1>
+  <h2>Testing</h2>
+  <ul>
+    <li class='fragment'>What is testing, and what is good for.</li>
+    <li class='fragment'>ExUnit, Elixir's built-in Unit Testing framework.</li>
+    <li class='fragment'>Building an example module via TDD.</li>
+    <li class='fragment'>Exercism.io</li>
+    <li class='fragment'>A great feature Elixir provides called doctests</li>
+  </ul>
+  <aside class='notes'>
+    <p>Alright, in this section we&#39;re going to get an introduction to testing.  [advance]</p>
+    
+    <p>What is it, what&#39;s it good for, [advance]</p>
+    
+    <p>how do we do it in Elixir. [advance]</p>
+    
+    <p>We&#39;ll build a module from the ground up with TDD. [advance]</p>
+    
+    <p>We&#39;ll take a brief look at the tool that got me to write my first Elixir code [advance],</p>
+    
+    <p>and we&#39;ll look at DocTests.  Let&#39;s get started.</p>
+  </aside>
+</section>
+<section>
+  <h1>What is Testing For?</h1>
+  <ul>
+    <li>Avoiding Regressions</li>
+    <li>i.e., refactoring without fear of accidentally changing behaviour</li>
+    <li class='fragment'>Thinking in tests</li>
+    <li class='fragment'>Feeling pain when modules start to get too complex.</li>
+    <li class='fragment'>Rapid Development</li>
+  </ul>
+  <aside class='notes'>
+    <p>What is testing for?  People usually think its value resides in avoiding
+    regressions, and making sure code isn&#39;t broken later.  In my opinion, there&#39;s
+    far greater value in [advance]</p>
+    
+    <ul>
+    <li>Thinking in tests [advance]</li>
+    <li>Feeling pain when modules start to get too complex.  If the tests are getting
+    hard to write, odds are the code is doing too much. [advance]</li>
+    <li>and Rapid Development.  Once I knew how to test in Erlang, I had a working chat
+    server in just a few hours.  I spent weeks before that on more trivial projects.</li>
+    </ul>
+  </aside>
+</section>
+<section>
+  <h1>Unit Testing</h1>
+  <h2 class='fragment'>Test a single thing</h2>
+  <aside class='notes'>
+    <p>Unit testing is a means of testing just a single &#39;unit&#39; in your system. [advance]</p>
+    
+    <p>This can be contrasted with an acceptance test, which tests the behaviour of a system
+    as a whole, and verifies that it satisfies the overarching requirements.</p>
+    
+    <p>Unit tests, on the other hand, are focused with a single portion of the system.</p>
+  </aside>
+</section>
+<section>
+  <h1>ExUnit</h1>
+  <pre class='fragment'><code>def test_one_is_one(_) do&#x000A;  assert 1 == 1&#x000A;end</code></pre>
+  <pre class='fragment'><code>test "one is one" do&#x000A;  assert 1 == 1&#x000A;end</code></pre>
+  <pre class='fragment'><code>test "one is two" do&#x000A;  assert 1 == 2&#x000A;end</code></pre>
+  <pre class='fragment'><code> Expected 1 to be (==) 2.</code></pre>
+  <aside class='notes'>
+    <p>Elixir comes with a built in tool for writing unit tests, called <code>ExUnit</code>.  An
+    ExUnit test case is just a module that uses <code>ExUnit.Case</code>.  We&#39;ll build a test
+    case in a little bit, but for now I&#39;ll just tell you a few more things about
+    ExUnit.</p>
+    
+    <p>A module extended with <code>ExUnit.Case</code> will run all functions whose names begin with
+    <code>test</code> that have arity 1 - that is, that only take a single argument.  For instance,
+    you could define a function like this: [advance]</p>
+    
+    <p>However, ExUnit provides a <code>test</code> macro that allows you to write your tests a
+    bit easier on the eyes: [advance]</p>
+    
+    <p>We&#39;ve also seen <code>assert</code> here, which is a macro provided by ExUnit to describe
+    the intended behaviour of your system.  For instance, if you have this test case:
+    [advance]</p>
+    
+    <p>Then when you run the test suite, the test will fail with [advance]</p>
+    
+    <p>&quot;Expected 1 to be (==) 2&quot;</p>
+    
+    <p>The inverse of <code>assert</code> is <code>refute</code>.  These two macros provide most of what you&#39;ll
+    need to write your tests.  There are a few others provided, and they can be found
+    in <a href="http://elixir-lang.org/docs/stable/ExUnit.Assertions.html">ExUnit&#39;s Assertions documentation</a></p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>To get comfortable testing in Elixir, we&#39;re going to create a module of our own
+    using Test-Driven-Development, or TDD.  If you&#39;re unfamiliar with this concept,
+    it&#39;s basically the idea that you write your tests first, then write just enough
+    code to make them pass, and no more.  That is, you let the tests &quot;drive&quot; the
+    development of your codebase.</p>
+    
+    <p>We&#39;re going to test-drive a module called <code>Schizo</code>.  It&#39;s going to provide two
+    functions: <code>uppercase</code> and <code>unvowel</code>.  These functions will uppercase every
+    other word, and remove the vowels from every other word, respectively.</p>
+    
+    <p>To get started, we&#39;ll use <code>mix</code> to create a new app:</p>
+    
+    <pre><code>mix new schizo&#x000A;</code></pre>
+    
+    <p>Go ahead and <code>cd</code> into the <code>schizo</code> directory.</p>
+    
+    <p>Since we&#39;ll be using TDD, let&#39;s go ahead and write a test file, and define
+    some behaviour for our first function, <code>uppercase.</code> [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <pre><code>defmodule SchizoTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  test &quot;uppercase doesn&#39;t change the first word&quot; do&#x000A;    assert(Schizo.uppercase(&quot;foo&quot;) == &quot;foo&quot;)&#x000A;  end&#x000A;&#x000A;  test &quot;uppercase converts the second word to uppercase&quot; do&#x000A;    assert(Schizo.uppercase(&quot;foo bar&quot;) == &quot;foo BAR&quot;)&#x000A;  end&#x000A;&#x000A;  test &quot;uppercase converts every other word to uppercase&quot; do&#x000A;    assert(Schizo.uppercase(&quot;foo bar baz whee&quot;) == &quot;foo BAR baz WHEE&quot;)&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>Now let&#39;s just start implementing, making tests pass one by one as we go.</p>
+    
+    <p>First, open up <code>lib/schizo.ex</code>:</p>
+    
+    <pre><code>defmodule Schizo do&#x000A;  use Application.Behaviour&#x000A;&#x000A;  # See http://elixir-lang.org/docs/stable/Application.Behaviour.html&#x000A;  # for more information on OTP Applications&#x000A;  def start(_type, _args) do&#x000A;    Schizo.Supervisor.start_link&#x000A;  end&#x000A;&#x000A;  def uppercase(string) do&#x000A;    string&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>Now run the tests - one of them passes with just this, but now we need to actually
+    start implementing logic.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Alright, so now let&#39;s just go ahead and talk through our anticipated logic real
+    quickly:</p>
+    
+    <pre><code>def uppercase(string) do&#x000A;  string&#x000A;  # Split string on spaces into a list of words&#x000A;  # Transform every other word (uppercase)&#x000A;  # Join the words back with space&#x000A;end&#x000A;</code></pre>
+    
+    <p>Now two of these are really easy to do.  There&#39;s a <code>String.split/1</code> function
+    that will split a string into words, and there&#39;s an <code>Enum.join/2</code> that will join
+    a list of strings with the specified separator.</p>
+    
+    <pre><code>def uppercase(string) do&#x000A;  string&#x000A;  # Split string on spaces into a list of words&#x000A;  words = String.split(string)&#x000A;  # Transform every other word (uppercase)&#x000A;  # Join the words back with space&#x000A;  Enum.join(words, &quot; &quot;)&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Now all that&#39;s left is to transform every other word.  This would be trivial if
+    we had the index of each item as it was passed to some function, as we&#39;d only apply
+    the function when the index was even.</p>
+    
+    <p>It turns out there&#39;s a function called <code>Stream.with_index/1</code> that takes an enumerable
+    and turns it into a stream where each item in the enumerable is accompanied by its
+    index - this is exactly what we want.</p>
+    
+    <pre><code>def uppercase(string) do&#x000A;  string&#x000A;  # Split string on spaces into a list of words&#x000A;  words = String.split(string)&#x000A;  # Transform every other word (uppercase)&#x000A;  words_with_index = Stream.with_index(words)&#x000A;  transformed_words = Enum.map(words_with_index, &amp;uppercase_every_other_word/1)&#x000A;  # NOTE: The ampersand just says to extract this named function as an anonymous&#x000A;  # thing we can pass around&#x000A;&#x000A;  # Join the words back with space&#x000A;  Enum.join(transformed_words, &quot; &quot;)&#x000A;end&#x000A;&#x000A;def uppercase_every_other_word({word, index}) do&#x000A;  word&#x000A;end&#x000A;</code></pre>
+    
+    <p>We&#39;ll go ahead and run the tests, and we can see that we&#39;re still working.  Now all
+    that&#39;s left is to actually make it uppercase every other word, so let&#39;s look at that.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <pre><code>def uppercase_every_other_word({word, index}) do&#x000A;  case rem(index, 2) do&#x000A;    1 -&gt; String.upcase(word)&#x000A;    0 -&gt; word&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>That&#39;s really all it takes.  Run the tests, and they should pass.</p>
+    
+    <p>Now that we&#39;ve implemented uppercase, let&#39;s implement unvowel.  First, we write
+    some tests:</p>
+    
+    <pre><code>test &quot;unvowel doesn&#39;t change the first word&quot; do&#x000A;  assert(Schizo.unvowel(&quot;foo&quot;) == &quot;foo&quot;)&#x000A;end&#x000A;&#x000A;test &quot;unvowel removes the second word&#39;s vowels&quot; do&#x000A;  assert(Schizo.unvowel(&quot;foo bar&quot;) == &quot;foo br&quot;)&#x000A;end&#x000A;&#x000A;test &quot;unvowel removes every other word&#39;s vowels&quot; do&#x000A;  assert(Schizo.unvowel(&quot;foo bar baz whee&quot;) == &quot;foo br baz wh&quot;)&#x000A;end&#x000A;</code></pre>
+    
+    <p>Once again, we&#39;ll run the tests and start implementing, step-by-step, until they
+    pass.  The first test is, once again, very easy to get to pass:</p>
+    
+    <pre><code>def unvowel(string) do&#x000A;  string&#x000A;end&#x000A;</code></pre>
+    
+    <p>Go ahead and run them, and now we&#39;re down to two failing tests again.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>So we could just start copying and pasting to get this sucker to pass, but we&#39;re
+    Real Programmers, so we won&#39;t do that.  Let&#39;s take a second to talk through what
+    we wish we could write, and then make it so:</p>
+    
+    <pre><code>defmodule Schizo do&#x000A;  def uppercase(string) do&#x000A;    transform_every_other_word(string, &amp;uppercaser/1)&#x000A;  end&#x000A;&#x000A;  def transform_every_other_word(string, transformation) do&#x000A;    # Split string on spaces into a list of words&#x000A;    words = String.split(string)&#x000A;    # Transform every other word (uppercase)&#x000A;    words_with_index = Stream.with_index(words)&#x000A;    transformed_words = Enum.map(words_with_index, transformation)&#x000A;    # Join the words back with space&#x000A;    Enum.join(transformed_words, &quot; &quot;)&#x000A;  end&#x000A;&#x000A;  def unvowel(string) do&#x000A;    string&#x000A;  end&#x000A;&#x000A;  def uppercaser({word, index}) do&#x000A;    case rem(index, 2) do&#x000A;      1 -&gt; String.upcase(word)&#x000A;      0 -&gt; word&#x000A;    end&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>Alright, so now that we&#39;ve got that available, we should trivialy be able to
+    write a new transformation function, called the <code>unvoweler</code>:</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <pre><code>def unvowel(string) do&#x000A;  transform_every_other_word(string, &amp;unvoweler/1)&#x000A;end&#x000A;&#x000A;def unvoweler({word, index}) do&#x000A;  case rem(index, 2) do&#x000A;    1 -&gt; Regex.replace(%r([aeiou]), word, &quot;&quot;)&#x000A;    0 -&gt; word&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>So that should really be all we need.  Run the tests, and they&#39;re all green.</p>
+    
+    <p>Now, TDD consists of &quot;red, green, refactor.&quot;  So far, we&#39;ve just done &quot;red,
+    green.&quot;  There&#39;s a lot of duplication here, and removing it will teach us some
+    fun stuff about elixir, so let&#39;s go ahead and refactor this until we&#39;re happy
+    with it.  The whole point of the tests is that we can do this without fear.</p>
+    
+    <p>We want a generic <code>transformer</code> function that takes this {word, index} as input,
+    and a transformation function, and only applies it to every other word.  We&#39;d
+    expect to be able to rewrite the <code>unvoweler</code> function like this:</p>
+    
+    <pre><code>def unvoweler(input) do&#x000A;  transformer(input, fn (word) -&gt; Regex.replace(%r([aeiou]), word, &quot;&quot;) end)&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>So let&#39;s see how to write that <code>transformer</code> function.  Not surprisingly, we&#39;ll
+    just grab the old unvoweler function definition and tweak it a bit:</p>
+    
+    <pre><code>def transformer({word, index}, transformation) do&#x000A;  case rem(index, 2) do&#x000A;    1 -&gt; transformation.(word)&#x000A;    0 -&gt; word&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>We&#39;ll run the tests...and they pass.  Now let&#39;s redefine uppercaser in terms
+    of transformer:</p>
+    
+    <pre><code>def uppercaser(input) do&#x000A;  transformer(input, &amp;String.upcase/1)&#x000A;end&#x000A;</code></pre>
+    
+    <p>Run the tests, and now we have this pretty nicely factored set of functions
+    for doing these transforms.  It&#39;s also very easy to extend it with more
+    functions along the same lines - we&#39;d just need to define a new transformation
+    and pass it to the transformer.</p>
+    
+    <p>Alright, so that&#39;s it for the live coding for now.  Let&#39;s have a look at the
+    tool that got me to write my first elixir: Exercism.io</p>
+  </aside>
+</section>
+<section>
+  <h1>Exercism.io</h1>
+  <p>
+    <p><a href="http://www.exercism.io">http://www.exercism.io</a> is a community with the goal
+    of providing peer review for basic code katas.</p>
+  </p>
+  <aside class='notes'>
+    <p><a href="http://www.exercism.io">http://www.exercism.io</a> is a community with the goal
+    of providing peer review for basic code katas.  They also try to converge on
+    the &#39;ideal&#39; solution to various given problems in different languages.  They
+    have an Elixir track, and that&#39;s where I wrote my first Elixir code.</p>
+    
+    <p>I&#39;d definitely suggest you guys go over there and get an account - it will help
+    you hone your chops, with great feedback from people who care.</p>
+    
+    <p>Now let&#39;s get back to one more testing tool of interest in Elixir: [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>DocTests</h1>
+  <aside class='notes'>
+    <p>Elixir also ships with support for something called doctests.  Basically, if you
+    place an example <code>iex</code> session in your module or function documentation, you can
+    easily verify its behaviour by specifying a doctest in your test case.</p>
+    
+    <p>This was cribbed from Python, to my knowledge, but coming from Ruby I never have
+    had a chance to play with it.  It&#39;s amazing.  Let&#39;s go ahead and add a doctest
+    to the Schizo module so you can see how it works:</p>
+    
+    <pre><code>@moduledoc &quot;&quot;&quot;&#x000A;This is a module that provides odd behaviour for transforming every other word&#x000A;in a string.&#x000A;&#x000A;Here are some examples:&#x000A;&#x000A;iex&gt; Schizo.uppercase(&quot;this is an example&quot;)&#x000A;&quot;this IS an EXAMPLE&quot;&#x000A;&#x000A;iex&gt; Schizo.unvowel(&quot;this is an example&quot;)&#x000A;&quot;this s an xmpl&quot;&#x000A;&quot;&quot;&quot;&#x000A;</code></pre>
+    
+    <p>To make these doctests run when we run our test suite, we just open up the
+    <code>SchizoTest</code> module and add the following line:</p>
+    
+    <pre><code>doctest Schizo&#x000A;</code></pre>
+    
+    <p>Then, we run the tests again, and two new test cases have been added.  Pretty cool,
+    huh?  Gone are the days of documentation that is subtly incorrect!</p>
+  </aside>
+</section>
+<section>
+  <h1>Testing</h1>
+  <h2>Summary</h2>
+  <ul>
+    <li>Unit Tests</li>
+    <li>TDD Exploration</li>
+    <li>DocTests</li>
+  </ul>
+  <aside class='notes'>
+    <p>That wraps up this section.  We just learned how to write unit tests, TDD a module
+    from the ground up, and explored DocTests.  Armed with the ability to TDD your
+    code, you should be able to level up in Elixir substantially faster from here on
+    out.</p>
+  </aside>
+</section>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

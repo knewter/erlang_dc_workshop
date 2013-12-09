@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>OTP with Elixir - GenServer</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Josh Adams">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<section>
+  <h1>OTP with Elixir</h1>
+  <ul>
+    <li class='fragment'>Servers</li>
+    <li class='fragment'>Finite State Machines</li>
+    <li class='fragment'>GenEvent</li>
+    <li class='fragment'>Supervisors</li>
+  </ul>
+  <aside class='notes'>
+    <p>Alright, so now we know the basics about how Elixir works and what its
+    syntax looks like.  Now let&#39;s dig into using OTP with Elixir.</p>
+    
+    <p>First, let me just give a brief introduction to OTP.  It stands for the
+    &quot;Open Telephony Project&quot; and it&#39;s part of the Erlang distribution.  It provides
+    a means to build generic servers, [advance]</p>
+    
+    <p>state machines, [advance]</p>
+    
+    <p>event handlers, [advance]</p>
+    
+    <p>and supervision mechanisms.</p>
+    
+    <p>You really want to build your application to be OTP Compliant - this means
+    that you have an entry point to your application that supervises the whole thing,
+    and provides common and known interfaces for starting and interacting with the
+    various pieces of your application.</p>
+    
+    <p>Let&#39;s get started. [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>GenServer</h1>
+  <pre><code>defmodule Something do&#x000A;  use GenServer.Behaviour&#x000A;end</code></pre>
+  <aside class='notes'>
+    <p>We&#39;re going to start out looking at GenServer, which stands for &quot;Generic
+    Server.&quot;  It&#39;s a standardized implementation of the client/server model
+    for sharing a resource.  Basically, it makes it pretty painless to share
+    and manage access to a bit of state from multiple different processes,
+    using message passing.</p>
+    
+    <p>We&#39;ll dig into it by building a project that uses it.  Let&#39;s get started.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>We&#39;re going to implement a basic server to model a Fridge.  This concept
+    is shamelessly ripped from the Learn You Some Erlang book, which I can&#39;t
+    recommend enough.</p>
+    
+    <p>We&#39;ll start out by building a new project:</p>
+    
+    <pre><code>mix new fridge_server&#x000A;</code></pre>
+    
+    <p>Next, we&#39;ll make a basic test to describe the Fridge:</p>
+    
+    <pre><code>defmodule FridgeServerTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  setup do&#x000A;    { :ok, fridge } = :gen_server.start_link FridgeServer.Server, [], []&#x000A;    { :ok, [ server: fridge ] }&#x000A;  end&#x000A;&#x000A;  test &quot;putting something into the fridge&quot;, meta do&#x000A;    assert :ok == :gen_server.call(meta[:server], {:store, :bacon})&#x000A;  end&#x000A;&#x000A;  test &quot;removing something from the fridge&quot;, meta do&#x000A;    :gen_server.call(meta[:server], {:store, :bacon})&#x000A;    assert {:ok, :bacon} == :gen_server.call(meta[:server], {:take, :bacon})&#x000A;  end&#x000A;&#x000A;  test &quot;removing something from the fridge twice&quot;, meta do&#x000A;    :gen_server.call(meta[:server], {:store, :bacon})&#x000A;    assert {:ok, :bacon} == :gen_server.call(meta[:server], {:take, :bacon})&#x000A;    assert :not_found == :gen_server.call(meta[:server], {:take, :bacon})&#x000A;  end&#x000A;&#x000A;  test &quot;taking something from the fridge that isn&#39;t in there&quot;, meta do&#x000A;    assert :not_found == :gen_server.call(meta[:server], {:take, :bacon})&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>(talk through the test a bit as you go)</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>So let&#39;s go ahead and start implementing the server this test is looking for.
+    We&#39;ll start out by generating a <code>lib/fridge_server/server.ex</code> file and putting a
+    module named <code>FridgeServer.Server</code> in there.</p>
+    
+    <pre><code>defmodule FridgeServer.Server do&#x000A;end&#x000A;</code></pre>
+    
+    <p>Next, we&#39;ll go ahead and <code>use GenServer.Behaviour</code>.  That in itself is enough to
+    start making our tests fail differently.  Now, they basically fail because the
+    server never handles the call messages it&#39;s sent.  Let&#39;s give it a basic
+    implementation of replying to those messages, so that the timeouts will stop:</p>
+    
+    <pre><code>defmodule FridgeServer.Server do&#x000A;  use GenServer.Behaviour&#x000A;&#x000A;  def handle_call(_call, _from, state) do&#x000A;    {:reply, :error, state}&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>Running the tests now gives us instant feedback.  Let&#39;s implement the <code>:store</code>
+    call by making it add the second element of the call to the server&#39;s state.
+    We&#39;ll also rename &#39;state&#39; to &#39;items&#39; so that it&#39;s a bit more representative of
+    what we&#39;re dealing with.  We&#39;ll replace the earlier <code>handle_call</code> entirely.</p>
+    
+    <pre><code>def handle_call({:store, item}, _from, items) do&#x000A;  {:reply, :ok, [item|items]}&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>This time when we ran the tests, we saw a more legitimate looking failure -
+    basically, the call to <code>{:take, item}</code> wasn&#39;t matched by any <code>handle_call</code>
+    function clause, and so the server crashed.  Let&#39;s go ahead and implement that
+    call:</p>
+    
+    <pre><code>def handle_call({:take, item}, _from, items) do&#x000A;  {:reply, {:ok, item}, items}&#x000A;end&#x000A;</code></pre>
+    
+    <p>Here, we&#39;ve cheated a bit.  We just claim to have the item that&#39;s attempting to
+    be taken out of the fridge, without even checking if it&#39;s available.  However,
+    this is sufficient to pass the next test.  In order to pass the final two tests,
+    we&#39;ll need to actually check for the item in the fridge and delete it when we
+    take it.  Let&#39;s implement that.</p>
+    
+    <pre><code>def handle_call({:take, item}, _from, items) do&#x000A;  case Enum.member?(items, item) do&#x000A;    true  -&gt; {:reply, {:ok, item}, items}&#x000A;    false -&gt; {:reply, :not_found, items}&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>That supports the first part of the remaining two tests - replying appropriately
+    if an item is not found.  The final test hinges on actually removing the taken
+    item from the fridge.  Implementing that:</p>
+    
+    <pre><code>def handle_call({:take, item}, _from, items) do&#x000A;  case Enum.member?(items, item) do&#x000A;    true  -&gt; {:reply, {:ok, item}, List.delete(items, item)}&#x000A;    false -&gt; {:reply, :not_found, items}&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <h2>Prettying up our public interface</h2>
+    
+    <p>Now, looking back at the tests, the interface for this thing is pretty
+    miserable.  No one wants to be going through the <code>:gen_server</code> module directly
+    to interact with their fridge.  Let&#39;s see what a nicer api might look like:</p>
+    
+    <pre><code>{:ok, fridge} = FridgeServer.Server.start_link&#x000A;:ok = FridgeServer.Server.store(fridge, :bacon)&#x000A;{:ok, bacon} = FridgeServer.Server.take(fridge, :bacon)&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>We&#39;ll copy the existing test,</p>
+    
+    <pre><code>cp test/fridge_server_test.exs test/fridge_server_nicer_interface_test.exs&#x000A;</code></pre>
+    
+    <p>and rewrite it to use this interface.</p>
+    
+    <pre><code>defmodule FridgeServerNicerInterfaceTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  setup do&#x000A;    { :ok, fridge } = FridgeServer.Server.start_link&#x000A;    { :ok, [ server: fridge ] }&#x000A;  end&#x000A;&#x000A;  test &quot;putting something into the fridge&quot;, meta do&#x000A;    assert :ok == FridgeServer.Server.store(meta[:server], :bacon)&#x000A;  end&#x000A;&#x000A;  test &quot;removing something from the fridge&quot;, meta do&#x000A;    FridgeServer.Server.store(meta[:server], :bacon)&#x000A;    assert {:ok, :bacon} == FridgeServer.Server.take(meta[:server], :bacon)&#x000A;  end&#x000A;&#x000A;  test &quot;removing something from the fridge twice&quot;, meta do&#x000A;    FridgeServer.Server.store(meta[:server], :bacon)&#x000A;    assert {:ok, :bacon} == FridgeServer.Server.take(meta[:server], :bacon)&#x000A;    assert :not_found == FridgeServer.Server.take(meta[:server], :bacon)&#x000A;  end&#x000A;&#x000A;  test &quot;taking something from the fridge that isn&#39;t in there&quot;, meta do&#x000A;    assert :not_found == FridgeServer.Server.take(meta[:server], :bacon)&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Now, to implement this interface we just need to write three simple functions:</p>
+    
+    <pre><code># Public API&#x000A;def start_link do&#x000A;  :gen_server.start_link(__MODULE__, [], [])&#x000A;end&#x000A;&#x000A;def store(server, item) do&#x000A;  :gen_server.call(server, {:store, item})&#x000A;end&#x000A;&#x000A;def take(server, item) do&#x000A;  :gen_server.call(server, {:take, item})&#x000A;end&#x000A;</code></pre>
+    
+    <p>Run the tests, and all should be well.</p>
+  </aside>
+</section>
+<section>
+  <h1>GenServer</h1>
+  <h2>Summary</h2>
+  <aside class='notes'>
+    <p>Alright, so that&#39;s a quick overview of OTP Servers in Elixir.  Does anyone have
+    any questions about what we just saw?</p>
+  </aside>
+</section>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

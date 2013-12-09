@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>OTP with Elixir - GenEvent</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Josh Adams">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<section>
+  <h1>GenEvent</h1>
+  <div class='fragment'>
+    <h2>Event Handling Behaviour</h2>
+    <pre><code>defmodule Something do&#x000A;  use GenEvent.Behaviour&#x000A;end</code></pre>
+  </div>
+  <aside class='notes'>
+    <p>GenEvent is &quot;a behaviour module for implementing event handling functionality.&quot; [advance]</p>
+    
+    <p>For this portion of the talk, we&#39;re going to see what it would look like to
+    implement an Entity-Component system like you might use if you were building a
+    game.  This is basically a port of the <code>:gen_event</code> example that Jordan Wilderburg
+    used at the most recent ErlangCamp, for what it&#39;s worth.  He&#39;s awesome, thanks
+    Jordan.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>We&#39;ll make a new project:</p>
+    
+    <pre><code>mix new zeldacat&#x000A;cd zeldacat&#x000A;</code></pre>
+    
+    <p>We want to start out with a concept of an Entity, and then add a health meter to
+    our entity.  Go ahead and open up <code>test/zeldacat_test.exs</code> and add this:</p>
+    
+    <pre><code>defmodule ZeldacatTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  test &quot;something with a health component can die&quot; do&#x000A;    # Create Entity, add health component, then kill it!&#x000A;    {:ok, entity} = Entity.init()&#x000A;    Entity.add_component(entity, HealthComponent, 100)&#x000A;    assert HealthComponent.get_hp(entity) == 100&#x000A;    assert HealthComponent.alive?(entity) == true&#x000A;    Entity.notify(entity, {:hit, 50})&#x000A;    assert HealthComponent.get_hp(entity) == 50&#x000A;    Entity.notify(entity, {:heal, 25})&#x000A;    assert HealthComponent.get_hp(entity) == 75&#x000A;    Entity.notify(entity, {:hit, 75})&#x000A;    assert HealthComponent.get_hp(entity) == 0&#x000A;    assert HealthComponent.alive?(entity) == false&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Here we&#39;re just asserting that after adding a health component to our entity, we
+    can:</p>
+    
+    <ul>
+    <li>Specify the starting HP</li>
+    <li>Get the HP</li>
+    <li>Reduce HP by hitting the entity</li>
+    <li>Increase HP by healing the entity</li>
+    </ul>
+    
+    <p>So that&#39;s all good and fine, but how exactly are we going to do this?  This is
+    where GenEvent comes in.  First, let&#39;s start off with an <code>Entity</code> module that we
+    can spawn.  Open up <code>lib/entity.ex</code> and add the following:</p>
+    
+    <pre><code>defmodule Entity do&#x000A;  ### Public API&#x000A;  def init do&#x000A;    :gen_event.start_link()&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Here, we&#39;re just spawning a process that can be used with GenEvent.  Go ahead
+    and run the tests.  You&#39;ll see we&#39;ve not yet defined the <code>add_component/3</code>
+    function, so let&#39;s go ahead and add that.  It&#39;s just a nice wrapper for the
+    GenEvent api:</p>
+    
+    <pre><code>def add_component(pid, component, args) do&#x000A;  :gen_event.add_handler(pid, component, args)&#x000A;end&#x000A;</code></pre>
+    
+    <p>This function takes three arguments - a process, a GenEvent.Behaviour to add to
+    that process, and any arguments that GenEvent takes to its init function.</p>
+    
+    <p>Run your tests again, and you&#39;ll get a new failure, telling you there&#39;s no
+    <code>HealthComponent.get_hp/1</code> function defined.  Let&#39;s make a new file in
+    <code>lib/health_component.ex</code> to house our first GenEvent.Behaviour:</p>
+    
+    <pre><code>defmodule HealthComponent do&#x000A;  use GenEvent.Behaviour&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Now, GenEvent&#39;s first API we need to satisfy is that it has to respond to an
+    <code>init/1</code> function.  This function should return a tuple whose first element is
+    <code>:ok</code> and whose second element is the initial state for this GenEvent handler.
+    Each GenEvent (or component, in our terminology) carries its own state within
+    the process it&#39;s attached to.  We expect to just use this to track an entity&#39;s
+    health, and to allow it to be incremented and decremented, so we expect to take
+    a single argument, <code>hp</code>, and return that as our state:</p>
+    
+    <pre><code>### GenEvent API&#x000A;def init(hp) do&#x000A;  { :ok, hp }&#x000A;end&#x000A;</code></pre>
+    
+    <p>Now we want to attack the missing <code>get_hp/1</code> function.  Let&#39;s go ahead and
+    define a function that takes the entity in question as its only argument, and
+    then sends a synchronous GenEvent call to ask for the state:</p>
+    
+    <pre><code>### Public API&#x000A;def get_hp(entity) do&#x000A;  :gen_event.call(entity, HealthComponent, :get_hp)&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>This is just a nice public wrapper around the GenEvent api.  We&#39;re sending a
+    synchronous call that says &quot;hey entity, please send your HealthComponent event
+    handler the <code>:get_hp</code> event synchronously!&quot;</p>
+    
+    <p>Go ahead and run the tests again, and you&#39;ll get an error that says <code>get_hp</code>
+    returned <code>:ok</code> instead of <code>100</code> - this is because we didn&#39;t teach the
+    HealthComponent how to respond to that event.  Let&#39;s go ahead and see what that
+    looks like.  Add this to the GenEvent API section:</p>
+    
+    <pre><code>def handle_call(:get_hp, hp) do&#x000A;  {:ok, hp, hp}&#x000A;end&#x000A;</code></pre>
+    
+    <p>Run the tests again, and you&#39;ll get to the next line - this means that our
+    HealthComponent can now return its HP successfully!  The next failure is due to
+    our not having defined an <code>alive?/1</code> function.  This is part of our public API,
+    so let&#39;s go ahead and define it:</p>
+    
+    <pre><code>def alive?(entity) do&#x000A;  :gen_event.call(entity, HealthComponent, :alive?)&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Here, we&#39;re just using the same <code>:gen_event.call</code> API we used before, but
+    sending the <code>alive?</code> message this time.  If you run the tests now, you&#39;ll get a
+    weird error failure.  This is because the HealthComponent doesn&#39;t know how to
+    respond to that message from the GenEvent API.  We&#39;ll add a <code>handle_call</code> that
+    pattern matches that message:</p>
+    
+    <pre><code>def handle_call(:alive?, hp) do&#x000A;  {:ok, hp &gt; 0, hp}&#x000A;end&#x000A;</code></pre>
+    
+    <p>Once that&#39;s done, you&#39;ve gotten past the next line in our test.  That means you
+    can now ask both the health of an Entity with the HealthComponent, as well as
+    whether or not it&#39;s still alive.  That&#39;s pretty cool, but now our tests fail
+    because there&#39;s no <code>Entity.notify/2</code> function defined.  Go ahead and open up
+    <code>lib/entity.ex</code> again and let&#39;s define that as a wrapper around
+    <code>:gen_event.notify</code>:</p>
+    
+    <pre><code>def notify(pid, event) do&#x000A;  :gen_event.notify(pid, event)&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>This is just a really thin wrapper.  The only reason we add this is because a
+    user of our system has no need to know that we use <code>GenEvent</code> internally.  If
+    you run the tests now, you&#39;ll get an error because the health was supposed to be
+    50 after we received a hit, but we haven&#39;t defined how to handle the <code>:hit</code>
+    asynchronous message, so it has no effect.  Let&#39;s go ahead and tell our
+    HealthComponent how to handle that message:</p>
+    
+    <pre><code>def handle_event({:hit, amount}, hp) do&#x000A;  {:ok, hp - amount}&#x000A;end&#x000A;</code></pre>
+    
+    <p>If you run the tests now, you get past where they failed before, but once again
+    you get a really cryptic error.  The underlying problem is that we haven&#39;t
+    defined how to handle the <code>heal</code> event for our HealthComponent, so go ahead and
+    add the following to it:</p>
+    
+    <pre><code>def handle_event({:heal, amount}, hp) do&#x000A;  {:ok, hp + amount}&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>GenEvent</h1>
+  <h2>Summary</h2>
+  <aside class='notes'>
+    <p>Once you&#39;ve added that, the test completes successfully, and we&#39;re done.  This
+    was just a really quick introduction to GenEvent, and if you go back through the
+    code you&#39;ll find lots of interesting things here - I find it exciting that every
+    event handler carries its own state around with it inside your process.  I&#39;m not
+    sure why exactly, but it just seems like a very neat way to define this sort of
+    thing.</p>
+  </aside>
+</section>
+<section>
+  <h1>Resources</h1>
+  <ul>
+  <li><a href="http://inaka.net/blog/2013/01/21/erlang-event-driven/">Erlang Event Driven Applications</a> - http://inaka.net/blog/2013/01/21/erlang-event-driven/</li>
+  <li><a href="http://www.erlang.org/doc/man/gen_event.html">Erlang&#39;s <code>gen_event</code> Documentation</a> - http://www.erlang.org/doc/man/gen_event.html</li>
+  <li><a href="http://learnyousomeerlang.com/event-handlers">Learn You Some Erlang&#39;s section on <code>gen_event</code></a> - http://learnyousomeerlang.com/event-handlers</li>
+  <li><a href="https://erlangcentral.org/wiki/index.php/Gen_event_behavior_demystified">ErlangCentral&#39;s article on demystifying <code>gen_event</code></a> - https://erlangcentral.org/wiki/index.php/Gen<em>event</em>behavior_demystified</li>
+  <li><a href="http://github.com/knewter/zeldacat">ZeldaCat repo</a> - http://github.com/knewter/zeldacat</li>
+  <li><a href="https://github.com/erlware/erlang-camp/tree/master/events_and_logs/entity_manager">jwilderburg&#39;s entity manager from ErlangCamp Nashville</a> - https://github.com/erlware/erlang-camp/tree/master/events<em>and</em>logs/entity_manager</li>
+  </ul>
+</section>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

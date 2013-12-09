@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>OTP with Elixir - GenServer</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Josh Adams">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<section>
+  <h1>Supervisors</h1>
+  <h2 class='fragment'>Let It Crash!</h2>
+  <aside class='notes'>
+    <p>Now we&#39;re going to talk about a core concept in building systems in the Elixir
+    Way - &quot;Let it crash.&quot; [advance]</p>
+    
+    <p>That is, don&#39;t concern youreself with keeping your code
+    from crashing, just make sure that the system keeps running if something bad
+    happens.</p>
+    
+    <p>The way you manage this is by designing your system composed of multiple
+    processes, managed by supervisors.</p>
+    
+    <p>A supervisor exists to manage processes or other supervisors.  There are various
+    strategies defined in OTP to determine what to do when a child crashes, and
+    there are ways to handle repeated failures of supervised processes.</p>
+    
+    <p>Let&#39;s look at a project to supervise a ListServer so that it can live through a
+    crash.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Hey...</p>
+    
+    <pre><code>mix new supervised_list_server&#x000A;cd supervised_list_server&#x000A;</code></pre>
+    
+    <p>Let&#39;s write a quickie test for the server.  We&#39;ll open up
+    <code>test/list_server_test.exs</code>:</p>
+    
+    <pre><code>defmodule ListServerTest do&#x000A;  use ExUnit.Case&#x000A;&#x000A;  # Clear the ListServer before each test&#x000A;  setup do&#x000A;    ListServer.start_link&#x000A;    ListServer.clear&#x000A;  end&#x000A;&#x000A;  test &quot;it starts out empty&quot; do&#x000A;    assert ListServer.items == []&#x000A;  end&#x000A;&#x000A;  test &quot;it lets us add things to the list&quot; do&#x000A;    ListServer.add &quot;book&quot;&#x000A;    assert ListServer.items == [&quot;book&quot;]&#x000A;  end&#x000A;&#x000A;  test &quot;it lets us remove things from the list&quot; do&#x000A;    ListServer.add &quot;book&quot;&#x000A;    ListServer.add &quot;magazine&quot;&#x000A;    ListServer.remove &quot;book&quot;&#x000A;    assert ListServer.items == [&quot;magazine&quot;]&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>When we run the tests now, they&#39;ll fail because there&#39;s no ListServer module.
+    Let&#39;s get started.  We&#39;ll open up <code>lib/list_server.ex</code> and add a basic
+    ListServer.  It should all make sense - it&#39;s nothing we haven&#39;t seen before.</p>
+    
+    <pre><code>defmodule ListServer do&#x000A;  use GenServer.Behaviour&#x000A;&#x000A;  ### Public API&#x000A;  def start_link do&#x000A;    :gen_server.start_link({:local, :list}, __MODULE__, [], [])&#x000A;  end&#x000A;&#x000A;  def clear do&#x000A;    :gen_server.cast :list, :clear&#x000A;  end&#x000A;&#x000A;  def add(item) do&#x000A;    :gen_server.cast :list, {:add, item}&#x000A;  end&#x000A;&#x000A;  def remove(item) do&#x000A;    :gen_server.cast :list, {:remove, item}&#x000A;  end&#x000A;&#x000A;  def items do&#x000A;    :gen_server.call :list, :items&#x000A;  end&#x000A;&#x000A;  ### GenServer API&#x000A;  def init(list) do&#x000A;    {:ok, list}&#x000A;  end&#x000A;&#x000A;  # Clear the list&#x000A;  def handle_cast(:clear, list) do&#x000A;    {:noreply, []}&#x000A;  end&#x000A;  def handle_cast({:add, item}, list) do&#x000A;    {:noreply, list ++ [item]}&#x000A;  end&#x000A;  def handle_cast({:remove, item}, list) do&#x000A;    {:noreply, List.delete(list, item)}&#x000A;  end&#x000A;&#x000A;  def handle_call(:items, _from, list) do&#x000A;    {:reply, list, list}&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Alright, if we run the tests now they&#39;ll pass.  Now let&#39;s add a misfeature - a
+    bug.  We&#39;ll add a feature whose whole job is to crash the ListServer.  Add the
+    following:</p>
+    
+    <pre><code>def crash do&#x000A;  :gen_server.cast :list, :crash&#x000A;end&#x000A;&#x000A;#...&#x000A;&#x000A;def handle_cast(:crash, list) do&#x000A;  1 = 2&#x000A;end&#x000A;</code></pre>
+    
+    <p>To verify that this causes a crash, let&#39;s open up an <code>iex</code> session and see it
+    happen:</p>
+    
+    <pre><code>iex -S mix&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Now start a ListServer, add some items, remove some items, list them, and then
+    cause a crash.  Try to list them after crashing it:</p>
+    
+    <pre><code>ListServer.start_link&#x000A;ListServer.add &quot;book&quot;&#x000A;ListServer.items&#x000A;ListServer.add &quot;cane&quot;&#x000A;ListServer.items&#x000A;ListServer.remove &quot;cane&quot;&#x000A;ListServer.items&#x000A;ListServer.crash&#x000A;ListServer.items&#x000A;</code></pre>
+    
+    <p>OK, so once we&#39;ve crashed, we can&#39;t use it any more.  This sucks, because Erlang
+    and Elixir systems are supposed to be fault-tolerant, and here we made something
+    crash and it didn&#39;t tolerate it.  But of course, that&#39;s because we haven&#39;t
+    finished building a proper system.  This is where OTP&#39;s supervisors come in.
+    Let&#39;s go ahead and add a supervisor.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Open up <code>lib/list_supervisor.ex</code> and add the following:</p>
+    
+    <pre><code>defmodule ListSupervisor do&#x000A;  use Supervisor.Behaviour&#x000A;&#x000A;  def start_link do&#x000A;    :supervisor.start_link(__MODULE__, [])&#x000A;  end&#x000A;&#x000A;  def init(list) do&#x000A;    child_processes = [ worker(ListServer, list) ]&#x000A;    supervise child_processes, strategy: :one_for_one&#x000A;  end&#x000A;end&#x000A;</code></pre>
+    
+    <p>Now open up <code>iex -S mix</code> and try something very similar to what you did before:</p>
+    
+    <pre><code>ListSupervisor.start_link&#x000A;ListServer.add &quot;book&quot;&#x000A;ListServer.items&#x000A;ListServer.add &quot;cane&quot;&#x000A;ListServer.items&#x000A;ListServer.remove &quot;cane&quot;&#x000A;ListServer.items&#x000A;ListServer.crash&#x000A;ListServer.items&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>The last item was different - after crashing, we still had a list server!  It
+    just didn&#39;t have the state from before the crash.  This is the essence of
+    Supervision.  However, the downside here is we really want our actor to keep his
+    state if he crashes, but that&#39;s impossible since it&#39;s stored in the process.
+    The solution to this is to store the actual important bits of state in an
+    external process and make sure it does very little, so that it cannot crash.</p>
+  </aside>
+</section>
+<section>
+  <h1>Persistent State</h1>
+  <div class='fragment'>
+    <p><img src="./images/supervision_tree.png" alt="Supervision Tree"></p>
+  </div>
+  <aside class='notes'>
+    <p>In order to persist the data, and to make sure all of these processes start
+    together as they should, we&#39;re going to build a slightly more complex
+    supervision tree.  I learned how this should work from Dave Thomas&#39; book, by the
+    way.  Let&#39;s go ahead and have a look at what it&#39;ll look like. [advance]</p>
+    
+    <p>Here, you can see we&#39;re going to have a top level supervisor, who starts a
+    process to store the ListData in, and supervises a SubSupervisor, who&#39;s
+    responsible for the ListServer itself.  The ListServer will get access to the
+    ListData pid on initialization, and he&#39;ll ask ListData for the data every time
+    he needs to access it.  This way, when ListServer crashes, his data&#39;s safe and
+    sound.</p>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Alright, now that we know what we&#39;re trying to do, let&#39;s implement it.  Open up
+    <code>lib/list_supervisor.ex</code> and make it look like the following:</p>
+    
+    <pre><code>defmodule ListSupervisor do&#x000A;  use Supervisor.Behaviour&#x000A;&#x000A;  def start_link do&#x000A;    result = {:ok, sup} = :supervisor.start_link(__MODULE__, [])&#x000A;    start_workers(sup)&#x000A;    result&#x000A;  end&#x000A;&#x000A;  def start_workers(sup) do&#x000A;    # Start the ListData worker&#x000A;    {:ok, list_data} = :supervisor.start_child(sup, worker(ListData, []))&#x000A;&#x000A;    # Now start the SubSupervisor for the actual ListServer&#x000A;    :supervisor.start_child(sup, worker(ListSubSupervisor, [list_data]))&#x000A;  end&#x000A;&#x000A;  def init(_) do&#x000A;    supervise [], strategy: :one_for_one&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>Here, we need to get the pid of the ListData worker, and pass that on to the
+    ListSubSupervisor, so we had to manage stating the children of the supervisor
+    ourselves, rather than allowing the call to <code>supervise</code> to handle it for us.
+    Let&#39;s see what ListData is going to look like.  Open up <code>lib/list_data.ex</code>:</p>
+    
+    <pre><code>defmodule ListData do&#x000A;  use GenServer.Behaviour&#x000A;&#x000A;  # Public API&#x000A;  def start_link do&#x000A;    :gen_server.start_link(__MODULE__, [], [])&#x000A;  end&#x000A;&#x000A;  def save_state(pid, state) do&#x000A;    :gen_server.cast pid, {:save_state, state}&#x000A;  end&#x000A;&#x000A;  def get_state(pid) do&#x000A;    :gen_server.call pid, :get_state&#x000A;  end&#x000A;&#x000A;  # GenServer API&#x000A;  def init(list) do&#x000A;    {:ok, list}&#x000A;  end&#x000A;&#x000A;  def handle_call(:get_state, _from, current_state) do&#x000A;    {:reply, current_state, current_state}&#x000A;  end&#x000A;&#x000A;  def handle_cast({:save_state, new_state}, _current_state) do&#x000A;    {:noreply, new_state}&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>This is an extremely generic server that could be used for storing any arbitrary
+    value and replacing it.  It&#39;ll work fine for our needs.  Let&#39;s move on to the
+    ListSubSupervisor.  Open up <code>lib/list_sub_supervisor.ex</code>:</p>
+    
+    <pre><code>defmodule ListSubSupervisor do&#x000A;  use Supervisor.Behaviour&#x000A;&#x000A;  def start_link(list_data_pid) do&#x000A;    :supervisor.start_link(__MODULE__, list_data_pid)&#x000A;  end&#x000A;&#x000A;  def init(list_data_pid) do&#x000A;    child_processes = [ worker(ListServer, [list_data_pid]) ]&#x000A;    supervise child_processes, strategy: :one_for_one&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>This is extremely basic - it just tracks the list data pid, and passes it in to
+    the ListServer when it restarts it.  Now we just need to modify the ListServer
+    to both grab its state from the ListData server and to store it there when it
+    crashes.  Open up <code>lib/list_server.ex</code>:</p>
+    
+    <pre><code>defmodule ListServer do&#x000A;  use GenServer.Behaviour&#x000A;&#x000A;  ### Public API&#x000A;  def start_link(list_data_pid) do&#x000A;    :gen_server.start_link({:local, :list}, __MODULE__, list_data_pid, [])&#x000A;  end&#x000A;&#x000A;  def clear do&#x000A;    :gen_server.cast :list, :clear&#x000A;  end&#x000A;&#x000A;  def add(item) do&#x000A;    :gen_server.cast :list, {:add, item}&#x000A;  end&#x000A;&#x000A;  def remove(item) do&#x000A;    :gen_server.cast :list, {:remove, item}&#x000A;  end&#x000A;&#x000A;  def items do&#x000A;    :gen_server.call :list, :items&#x000A;  end&#x000A;&#x000A;  def crash do&#x000A;    :gen_server.cast :list, :crash&#x000A;  end&#x000A;&#x000A;  ### GenServer API&#x000A;  def init(list_data_pid) do&#x000A;    list = ListData.get_state(list_data_pid)&#x000A;    {:ok, {list, list_data_pid}}&#x000A;  end&#x000A;&#x000A;  # Clear the list&#x000A;  def handle_cast(:clear, {list, list_data_pid}) do&#x000A;    {:noreply, {[], list_data_pid}}&#x000A;  end&#x000A;  def handle_cast({:add, item}, {list, list_data_pid}) do&#x000A;    {:noreply, {list ++ [item], list_data_pid}}&#x000A;  end&#x000A;  def handle_cast({:remove, item}, {list, list_data_pid}) do&#x000A;    {:noreply, {List.delete(list, item), list_data_pid}}&#x000A;  end&#x000A;  def handle_cast(:crash, _state) do&#x000A;    1 = 2&#x000A;  end&#x000A;&#x000A;  def handle_call(:items, _from, {list, list_data_pid}) do&#x000A;    {:reply, list, {list, list_data_pid}}&#x000A;  end&#x000A;&#x000A;  # Handle termination&#x000A;  def terminate(_reason, {list, list_data_pid}) do&#x000A;    ListData.save_state list_data_pid, list&#x000A;  end&#x000A;end&#x000A;</code></pre>
+  </aside>
+</section>
+<section>
+  <h1>LIVE LIVE LIVE LIVE LIVE</h1>
+  <h1>CODING CODING CODING</h1>
+  <h1>ZOMG ZOMG ZOMG ZOMG</h1>
+  <aside class='notes'>
+    <p>So we had to tweak quite a few things, just to make sure we tracked the
+    <code>list_data_pid</code> throughout the server, but other than that it was very minimal
+    w/r/t changes.  Now let&#39;s see if we keep our state after a crash!  Run <code>iex -S&#x000A;mix</code></p>
+    
+    <pre><code>ListSupervisor.start_link&#x000A;ListServer.add &quot;book&quot;&#x000A;ListServer.items&#x000A;ListServer.add &quot;cane&quot;&#x000A;ListServer.items&#x000A;ListServer.remove &quot;cane&quot;&#x000A;ListServer.items&#x000A;ListServer.crash&#x000A;ListServer.items&#x000A;</code></pre>
+    
+    <p>And that&#39;s it!  We retained state beyond a crash.  This is the power of
+    supervision trees!</p>
+  </aside>
+</section>
+<section>
+  <h1>Supervisors</h1>
+  <h2>Summary</h2>
+  <aside class='notes'>
+    <p>That&#39;s it, we&#39;re done, go home :)</p>
+  </aside>
+</section>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

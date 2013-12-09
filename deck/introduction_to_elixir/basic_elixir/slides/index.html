@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Introduction to Elixir - Basic Elixir</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Josh Adams">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<section>
+  <h1>Introduction to Elixir</h1>
+  <h2>Josh Adams</h2>
+  <ul>
+    <li>
+      Github:
+      <a href='http://github.com/knewter'>knewter</a>
+    </li>
+    <li>
+      The Twitters:
+      <a href='http://twitter.com/knewter'>@knewter</a>
+    </li>
+    <li>
+      Work:
+      <a href='http://isotope11.com'>isotope11.com</a>
+    </li>
+    <li>
+      Videos:
+      <a href='http://elixirsips.com'>elixirsips.com</a>
+    </li>
+  </ul>
+  <aside class='notes'>
+    <p>Hey everybody, welcome to the longest talk of my life.  By way of introduction,
+    I&#39;m Josh Adams.</p>
+    
+    <p>I&#39;m on github as knewter.</p>
+    
+    <p>I&#39;m on the twitters as knewter.</p>
+    
+    <p>I&#39;m the CTO of a software development shop known as Isotope11 - we build stuff
+    mostly in Ruby and JavaScript for various people - government agencies, startups,
+    marketing firms, insurance agencies - we&#39;re not picky.</p>
+    
+    <p>I also run a screencast series in which I teach people Elixir as I learn it, which
+    is in fact the reason I&#39;m standing up here today.  If you all subscribed I&#39;d be
+    delighted and maybe I&#39;d stop losing money doing it :) You can find it at
+    elixirsips.com [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Three hours; Three Parts</h1>
+  <ul>
+    <li class='fragment'>Introduction to Elixir</li>
+    <li class='fragment'>OTP with Elixir</li>
+    <li class='fragment'>Building a Project</li>
+  </ul>
+  <aside class='notes'>
+    <p>This workshop is three hours long, and I&#39;ve tried to break it up into three evenly
+    sized parts: [advance]</p>
+    
+    <ul>
+    <li>Introduction to Elixir [advance]</li>
+    <li>OTP with Elixir [advance]</li>
+    <li>Building a Project</li>
+    </ul>
+    
+    <p>Let&#39;s go ahead and get started. [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Introduction to Elixir</h1>
+  <ul>
+    <li class='fragment'>Basic Elixir</li>
+    <li class='fragment'>Testing</li>
+    <li class='fragment'>Slightly Less Basic Elixir</li>
+  </ul>
+  <aside class='notes'>
+    <p>The Introduction to Elixir is broken into three parts as well: [advance]</p>
+    
+    <ul>
+    <li>Basic Elixir, in which we talk about syntax, tooling, real basic stuff [advance]</li>
+    <li>Testing, in which I introduce you to what&#39;s out there in the testing arena [advance]</li>
+    <li>and Slightly Less Basic Elixir, in which we cover some stuff that didn&#39;t make the cut
+    for what I&#39;d call &quot;Basic&quot;</li>
+    </ul>
+    
+    <p>Let&#39;s go ahead and start out with the Basic Elixir [advance]</p>
+  </aside>
+</section>
+<section>
+  <h1>Introduction to Elixir</h1>
+  <h2>Basic Elixir</h2>
+  <ul>
+    <li class='fragment'>Data Types</li>
+    <li class='fragment'>Pattern Matching</li>
+    <li class='fragment'>Functions</li>
+    <li class='fragment'>Mix and Modules</li>
+  </ul>
+  <aside class='notes'>
+    <p>This slide, too, has bullet points :)  We&#39;re going to cover four sections: [advance]</p>
+    
+    <ul>
+    <li>Data Types, in which we cover the raw primitives you&#39;ll deal with day to day [advance]</li>
+    <li>Pattern Matching, in which I introduce you to how flow control is done - this
+    is one of the coolest things Elixir and Erlang offer. [advance]</li>
+    <li>Functions, where we&#39;ll see how to define some functions and call them, and [advance]</li>
+    <li>Mix and Modules, where you&#39;ll see the <code>mix</code> tool and we&#39;ll build a dummy module
+    to get our feet wet before moving onto projecty things.</li>
+    </ul>
+    
+    <p>With that introduction out of the way, let&#39;s move on to Basic Elixir [advance]</p>
+  </aside>
+</section>
+<section>
+  <section>
+    <h1>Basic Elixir</h1>
+    <h2>Data Types</h2>
+    <ul>
+      <li class='fragment'>Atoms</li>
+      <li class='fragment'>Numbers</li>
+      <li class='fragment'>Strings</li>
+      <li class='fragment'>Lists</li>
+      <li class='fragment'>Tuples</li>
+      <li class='fragment'>Keyword Lists</li>
+      <li class='fragment'>Regular Expressions</li>
+      <li class='fragment'>Booleans</li>
+    </ul>
+    <aside class='notes'>
+      <p>We&#39;re going to speed through some data types here.  I won&#39;t call them all out because
+      we&#39;re all sick of bullet points right now, but here they all are, laid out:</p>
+      
+      <p>[advance with the down arrow until this slide&#39;s gone]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Atoms</h2>
+    <p>
+      Atoms are just like symbols in Ruby.  They consist of a colon, followed
+      by letters, digits, and underscores
+    </p>
+    <pre><code>:foo&#x000A;:bar&#x000A;:"some string"&#x000A;:certain_@symbols_are_ok_too</code></pre>
+    <aside class='notes'>
+      <p>Atoms are just like symbols in Ruby.  They consist of a colon, followed
+      by letters, digits, and underscores.</p>
+      
+      <p>Please forgive the syntax highlighting on this slide, the funky atoms are basically
+      exactly the sort of thing my in-browser highlighter has trouble with.</p>
+      
+      <p>In Elixir and Erlang, atoms are used frequently to tag tuples.  You&#39;ll
+      often see them as the first element in a tuple, used as a response type.  We&#39;ll
+      see tuples a little later.</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Strings</h2>
+    <pre><code>"foo" <> "bar" #=> "foobar"</code></pre>
+    <aside class='notes'>
+      <p>Strings in Elixir are Erlang binaries.  They are surrounded by double quotes.
+      Here I&#39;m just showing basic string concatenation, to give you a feel for what
+      that looks like.</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Numbers - Integers</h2>
+    <pre class='fragment'><code>1234567&#x000A;1_234_567&#x000A;1_234_567 == 1234567 # You can use underscores to make numbers easier to read&#x000A;12 + 24 # 36&#x000A;19 - 100 # -81&#x000A;</code></pre>
+    <aside class='notes'>
+      <p>Integers can be written in various ways.  Let&#39;s see a few: [advance]</p>
+      
+      <p>In Elixir, there&#39;s no limit on how large an integer can be.  You can do normal
+      sorts of things with these integers. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Numbers - Floating Points</h2>
+    <pre><code>1.23&#x000A;350.72&#x000A;.25 #=> (SyntaxError) iex:1: syntax error before: '.'</code></pre>
+    <aside class='notes'>
+      <p>Floating point numbers have a decimal point.</p>
+      
+      <p>Notice that there must be a number on both sides of the decimal in order to have
+      a valid floating point number. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Lists</h2>
+    <p>Lists look like arrays in other languages.</p>
+    <pre class='fragment'><code>[1,2,3]&#x000A;[:foo, :bar]&#x000A;[:also, [:they, :can], [:contain, :lists]]</code></pre>
+    <p class='fragment'>
+      They're actually just implemented as linked lists.
+    </p>
+    <p class='fragment'>
+      You can get their head (hd) and tail (tl).
+    </p>
+    <pre class='fragment'><code>a = [1, 2, 3]&#x000A;hd(a) # 1&#x000A;tl(a) # [2, 3]</code></pre>
+    <aside class='notes'>
+      <p>Lists look like arrays in other languages, although they have different
+      semantics.  Writing a list is easy [advance]</p>
+      
+      <p>Due to the way they&#39;re implemented, the easiest thing to do with a list is to
+      get its head or its tail - that is, the first element in the list, or all the
+      remaining elements in a list. [advance]</p>
+      
+      <p>This is because they are actually just linked lists. [advance]</p>
+      
+      <p>There are a couple of built in functions for accessing the head and tail of a list.
+      <code>hd</code> and <code>tl</code>. [advance]</p>
+      
+      <p>If you want something more like arrays, then you want tuples. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Tuples</h2>
+    <p>Tuples are ordered collections:</p>
+    <pre class='fragment'><code>{1, 2, 3}&#x000A;{:foo, :bar}</code></pre>
+    <aside class='notes'>
+      <p>Tuples are ordered collections. [advance]</p>
+      
+      <p>Tuples are used very frequently in Pattern Matching and in return values from
+      various functions (those two facts are not unrelated). [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Keyword Lists</h2>
+    <p>Like Hashes or Dicts</p>
+    <pre class='fragment'><code>[author: "Josh Adams", title: "Basic Elixir"]</code></pre>
+    <p class='fragment'>
+      That's just converted into an array of 2-element tuples, so that's the same as
+      the following:
+    </p>
+    <pre class='fragment'><code>[{:author, "Josh Adams"}, {:title, "Basic Elixir"}]</code></pre>
+    <aside class='notes'>
+      <p>Keyword lists are like hashes or dicts. [advance]</p>
+      
+      <p>That&#39;s just converted into an array of 2-element tuples, so that&#39;s the same as
+      the following: [advance]</p>
+      
+      <p>In Erlang, keyword lists don&#39;t exist as a first-level construct.  Elixir
+      provides some syntactic sugar around some core Erlang types to provide
+      Keyword Lists.  These serve the same purpose as hashes in Ruby. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Regular Expressions</h2>
+    <p>Elixir has Perl Compatible Regular Expressions.</p>
+    <pre class='fragment'><code>Regex.replace %r/[aeiou]/, "Beginning Elixir", "z" #=> "Bzgznnzng Elzxzr"</code></pre>
+    <aside class='notes'>
+      <p>If you aren&#39;t familiar with Regular Expressions, think of them as a concise way
+      to write rules for pattern matching a string.  If you <em>are</em> familiar with Regexes,
+      Elixir has Perl Compatible Regular Expressions, so you can mostly use them like you&#39;re
+      used to: [advance]</p>
+      
+      <p>You use the &#39;r&#39; sigil to build a regex (where sigil is just a concise word for
+      &#39;bit of syntax that is a percent sign followed by some letter) - Ruby uses sigils
+      to great effect, and I&#39;m glad to see them in Elixir. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Data Types</h1>
+    <h2>Booleans</h2>
+    <pre><code>false = :false&#x000A;true = :true</code></pre>
+    <aside class='notes'>
+      <p>In Elixir, everything but <code>false</code> or <code>nil</code> is truthy.  <code>false</code> and <code>nil</code> are
+      both shorthands for the atoms with the same name - namely, <code>:false</code> and <code>:nil</code>.</p>
+      
+      <p>[advance with right arrow]</p>
+    </aside>
+  </section>
+</section>
+<section>
+  <section>
+    <h1>Basic Elixir</h1>
+    <h2>Pattern Matching</h2>
+    <ul>
+      <li class='fragment'>Match Operator</li>
+      <li class='fragment'>Function Definitions</li>
+      <li class='fragment'>Case Statements</li>
+    </ul>
+    <aside class='notes'>
+      <p>And that&#39;s it for the data types.  Next, we&#39;re moving on to various places you&#39;ll
+      make use of pattern matching: [advance down]</p>
+      
+      <ul>
+      <li>The match operator [advance]</li>
+      <li>Function definitions [advance]</li>
+      <li>and Case statements [advance]</li>
+      </ul>
+    </aside>
+  </section>
+  <section>
+    <h1>Pattern Matching</h1>
+    <h2>Match Operator</h2>
+    <p>"Just the equals sign"</p>
+    <pre class='fragment'><code>foo = 1</code></pre>
+    <div class='fragment'>
+      <p>Not really...</p>
+      <pre><code>1 = foo</code></pre>
+    </div>
+    <div class='fragment'>
+      <pre><code>2 = foo #=> ** (MatchError) no match of right hand side value: 1</code></pre>
+    </div>
+    <aside class='notes'>
+      <p>The &#39;Match Operator&#39; is just the equals sign.  It looks like variable assignment
+      at first glance, but there&#39;s something fishy about it: [advance]</p>
+      
+      <p>This sets the previously-unbound variable &#39;foo&#39; to the integer 1.  That&#39;s just
+      assignment, right? [advance]</p>
+      
+      <p>Not really.  If the equals sign is an assignment operator, why was that a valid
+      expression? It turns out the match operator is really more like making an
+      assertion than it is assignment - it just turns out that if you assert an unbound
+      variable matches a value, Elixir will bind the variable and the assertion will
+      pass. [advance]</p>
+      
+      <p><code>foo</code> already had the value 1, so the match fails and the <code>MatchError</code> is
+      thrown.  Since so many things depend on Pattern Matching, I&#39;m willing to bet you
+      will run into <code>MatchError</code> quite often as you&#39;re learning.  I certainly do (both
+      here and when I was learning Erlang). [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Pattern Matching</h1>
+    <h2>Match Operator (cont)</h2>
+    <p>Here's some more advanced matches</p>
+    <pre class='fragment'><code>{:foo, bar} = {:foo, 3}</code></pre>
+    <pre class='fragment'><code>{_, baz} = {1, 2}&#x000A;baz #=> 2</code></pre>
+    <aside class='notes'>
+      <p>Let&#39;s try some more advanced matches, to further explore how what we&#39;re dealing
+      with is something entirely different from assignment.[advance]</p>
+      
+      <p>What does this expression do?  Anyone care to answer?  That&#39;s right, it assigns
+      bar to 3, so that the match would be successful.</p>
+      
+      <p>Underscores play an interesting role in Elixir.  They tell the compiler that you
+      don&#39;t care about the value in a given position in a Pattern you&#39;re matching on.
+      Sort of like a wildcard for Pattern Matching.  Here&#39;s an example: [advance]</p>
+      
+      <p>Imagine we knew that the value we were interested in in the data structure we
+      were matching was in its second position, and we didn&#39;t care about the other
+      components.  The underscore provides a clear signal to the compiler that we just
+      don&#39;t care about that value. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Pattern Matching</h1>
+    <h2>Match Operator (cont)</h2>
+    <pre><code>[a, 2] = [1, 2] # After this expression a is bound to 1&#x000A;[a, 2] = [3, 2] # Here, a gets re-bound to 3&#x000A;[^a, 2] = [4, 2] # MatchError, because the hat keeps a from re-binding&#x000A;</code></pre>
+    <aside class='notes'>
+      <p>Finally, there&#39;s one more important point in Elixir that&#39;s different than Erlang
+      and confused me for a bit.  If you want to use a variable in a pattern match as
+      a filter (i.e. you want a MatchError thrown if the data on the righthand side
+      doesn&#39;t match the presently-bound value in a given variable) then you need to
+      signal to the compiler that you don&#39;t want to re-bind the variable.  This can be
+      done with the caret-symbol, or hat (^).</p>
+      
+      <p>In Erlang, you cannot modify a variable once it&#39;s been bound.  Elixir removes
+      this restriction, and so they had to provide this facility to differentiate
+      between variable binding and variables used for matches.  It&#39;s a decent
+      trade-off. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Pattern Matching</h1>
+    <h2>Function Definitions</h2>
+    <p>Pattern matching lets you choose amont multiple definitions of a function.</p>
+    <pre class='fragment'><code>print_name_egotistically = fn&#x000A;  :josh -> "Your name is Josh!"&#x000A;  _     -> "I don't care what your name is!"&#x000A;end&#x000A;print_name_egotistically.(:josh)&#x000A;#=> "Your name is Josh!"&#x000A;print_name_egotistically.(:phil)&#x000A;#=> "I don't care what your name is!"&#x000A;</code></pre>
+    <aside class='notes'>
+      <p>Pattern matching is used to choose between multiple possible definitions of a
+      function.  As an example, I&#39;ll define a silly function: [advance]</p>
+      
+      <p>That function has a different function definition depending on the pattern
+      matching for its arguments.  This is the first intensely different sort of thing
+      that we&#39;ve run into in Elixir so far.  As I was a math major in college, when I
+      first ran across this sort of thing in Erlang it got me really excited, as
+      that&#39;s really how I often like to see a function defined. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Pattern Matching</h1>
+    <h2>Case Statements</h2>
+    <p>
+      Case Statements can be used for control flow, and they, too, operate based on
+      Pattern Matching.
+    </p>
+    <pre class='fragment'><code>case {1,2,3} do&#x000A;  {4,5,6} -> "No match here"&#x000A;  {1,2,3} -> "This matches"&#x000A;  {_,2,3} -> "This would match, but since it's below another match it isn't hit."&#x000A;end</code></pre>
+    <aside class='notes'>
+      <p>Case Statements can be used for control flow, and they, too, operate based on
+      Pattern Matching. [advance]</p>
+      
+      <p>Here you can see the middle case is what&#39;s going to match.  The first one just doesn&#39;t
+      match.  The second one matches.  The third one would match, but since it&#39;s below another
+      match it&#39;s not going to get executed, as the first pattern to match gets precedence.</p>
+      
+      <p>[advance right]</p>
+    </aside>
+  </section>
+</section>
+<section>
+  <section>
+    <h1>Basic Elixir</h1>
+    <h2>Functions</h2>
+    <ul>
+      <li class='fragment'>Defining anonymous functions</li>
+      <li class='fragment'>Calling anonymous functions</li>
+      <li class='fragment'>Using functions as first class types</li>
+    </ul>
+    <aside class='notes'>
+      <p>That&#39;s it for the basics of Pattern Matching, let&#39;s move on to functions.</p>
+      
+      <p>In Elixir, functions are first class types.  This shouldn&#39;t be terribly
+      surprising; it <em>is</em> a functional programming language, after all.  Let&#39;s look at:</p>
+      
+      <p>[advance down x 3]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Functions</h1>
+    <h2>Defining Them</h2>
+    <pre class='fragment'><code>print_name = fn&#x000A;  {:person, first_name, last_name} -> first_name <> " " <> last_name&#x000A;end</code></pre>
+    <aside class='notes'>
+      <p>Anonymous functions are defined with the <code>fn</code> keyword.  Let&#39;s see what that
+      looks like: [advance]</p>
+      
+      <p>Functions take parameter lists and bodies, separated by arrows (<code>-&gt;</code>).  The
+      parameter lists are used for Pattern Matching (we actually saw function
+      declaration in the last section on Pattern Matching).</p>
+      
+      <p>The <code>print_name</code> function above will match a tuple containing three elements,
+      when the first element is the atom <code>:person</code>.  It then matches to a body that
+      will concatenate the first and last names together (where by convention, we
+      assume they will be in the second and third positions in the tuple). [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Functions</h1>
+    <h2>Calling Them</h2>
+    <p>
+      The syntax to call an anonymous function in Elixir is a little weird looking at
+      first.  Let's see what it looks like:
+    </p>
+    <pre class='fragment'><code>print_name.({:person, "Josh", "Adams"})&#x000A;#=> "Josh Adams"</code></pre>
+    <pre class='fragment'><code>print_name.('foo')&#x000A;# ** (FunctionClauseError) no function clause matching in :erl_eval."-inside-an-interpreted-fun-"/1</code></pre>
+    <aside class='notes'>
+      <p>The syntax to call an anonymous function in Elixir is a little weird looking at
+      first.  Let&#39;s see what it looks like: [advance]</p>
+      
+      <p>That&#39;s easy enough, although the dot makes calling them feel different from
+      calling functions in modules..  What do you think happens if you try to call it
+      with an argument that doesn&#39;t match any of the parameter lists? [advance]</p>
+      
+      <p>It throws a FunctionClauseError.  It&#39;s worth noting that there&#39;s currently an
+      ongoing discussion regarding removing that dot to call anonymous functions. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Functions</h1>
+    <h2>Calling Them (cont)</h2>
+    <pre class='fragment'><code>calculate_bill = fn&#x000A;  [{:item, price}, {:item, price2}] -> price + price2&#x000A;  {:item, price} -> price&#x000A;end</code></pre>
+    <pre class='fragment'><code>calculate_bill.([{:item, 20}, {:item, 10}]) #=> 30&#x000A;calculate_bill.({:item, 35}) #=> 35</code></pre>
+    <pre class='fragment'><code>(fn -> "foo" end).()&#x000A;#=> "foo"</code></pre>
+    <aside class='notes'>
+      <p>Let&#39;s define an anonymous function that behaves differently depending on the
+      argument provided: [advance]</p>
+      
+      <p>So we&#39;ve got an anonymous function here.  If you give it a list of two items, it
+      will return the sum of their prices.  If you give it a single item, it just returns
+      the price.</p>
+      
+      <p>Now, this is in fact a silly way to define this function (recursion would make
+      more sense, so you could accept more than 2 items), but for the purposes of
+      demonstrating Pattern Matching in functions it&#39;s acceptable. [advance]</p>
+      
+      <p>Now you can call this function with either a single item or a list containing
+      two items, and it will return the price.  It works like this: [advance]</p>
+      
+      <p>So that worked, but like we said, it&#39;s pretty low-utility - it can only accept
+      one or two items, tops.  I was going to follow up here by defining the function
+      recursively, but recursive anonymous functions in Elixir require a bit of
+      finagling with the Y combinator, so I won&#39;t cover that yet. [advance]</p>
+      
+      <p>One more fun thing that you can do with anonymous functions is invoke them
+      immediately.  For instance: [advance]</p>
+      
+      <p>Obviously that, too, is a pretty unlikely example, but it serves to show off
+      immediate invocation, none the less. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Functions</h1>
+    <h2>Using functions as first class types</h2>
+    <pre class='fragment'><code>add = fn&#x000A;  num -> (fn num2 -> num + num2 end)&#x000A;end</code></pre>
+    <pre class='fragment'><code>add3 = add.(3)&#x000A;add3.(5)&#x000A;# => 8&#x000A;</code></pre>
+    <aside class='notes'>
+      <p>Since functions are first-class in Elixir, you can pass them as arguments or
+      return them from other functions.  Let&#39;s play with that. [advance]</p>
+      
+      <p>Here, <code>add</code> is a function that takes an argument, and returns a function that will
+      add that argument to the new function&#39;s single argument.  We can use this to
+      generate a function that adds 3 to its argument: [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Functions</h1>
+    <h2>Using functions as first class types (cont)</h2>
+    <pre class='fragment'><code>greet_person = fn&#x000A;  greeter, {:person, first_name, last_name} ->&#x000A;    greeter.(first_name <> " " <> last_name)&#x000A;end&#x000A;&#x000A;polite_greeter = fn&#x000A;  name -> "Hello, #{name}, nice to meet you!"&#x000A;end&#x000A;&#x000A;terse_greeter = fn&#x000A;  name -> "Hi #{name}"&#x000A;end&#x000A;&#x000A;person = {:person, "Josh", "Adams"}&#x000A;&#x000A;greet_person.(polite_greeter, person)&#x000A;greet_person.(terse_greeter, person)</code></pre>
+    <aside class='notes'>
+      <p>You can also write functions that take other functions as arguments.  For
+      example: [advance]</p>
+      
+      <p>(let&#39;s show this off in iex)</p>
+      
+      <p>[now advance right]</p>
+    </aside>
+  </section>
+</section>
+<section>
+  <section>
+    <h1>Basic Elixir</h1>
+    <h2>Mix and Modules</h2>
+    <ul>
+      <li class='fragment'>Using mix to begin a new project</li>
+      <li class='fragment'>Defining a module</li>
+      <li class='fragment'>Compiling a module</li>
+      <li class='fragment'>Module definitions have return values</li>
+      <li class='fragment'>Documenting a Module</li>
+      <li class='fragment'>Generating documentation output using ExDoc</li>
+    </ul>
+    <aside class='notes'>
+      <p>Modules are the primary unit of code organization in Elixir.  They can contain
+      functions, both private and public.</p>
+      
+      <p>In this section, we&#39;re going to cover: [advance a bunch]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Using mix to begin a new project</h2>
+    <pre class='fragment'><code>$ mix new modules_example&#x000A;$ tree modules_example/&#x000A;modules_example/&#x000A;├── lib&#x000A;│   ├── modules_example&#x000A;│   │   └── supervisor.ex&#x000A;│   └── modules_example.ex&#x000A;├── mix.exs&#x000A;├── README.md&#x000A;└── test&#x000A;    ├── modules_example_test.exs&#x000A;    └── test_helper.exs&#x000A;&#x000A;3 directories, 6 files</code></pre>
+    <aside class='notes'>
+      <p>Elixir ships with a tool called <code>mix</code> that is used for creating, compiling, and
+      testing Elixir projects.  To use <code>mix</code> to start a new project, use <code>mix new&#x000A;projectname</code> [advance]</p>
+      
+      <p>This will generate a few files for you.  You end up with <code>lib</code> and <code>test</code>
+      directories, and a few project files. Let&#39;s go ahead and look at the <code>mix.exs</code>
+      file that was generated.</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Using mix to begin a new project (cont)</h2>
+    <pre><code>defmodule ModulesExample.Mixfile do&#x000A;  use Mix.Project&#x000A;&#x000A;  def project do&#x000A;    [ app: :modules_example,&#x000A;      version: "0.0.1",&#x000A;      elixir: "~> 0.11.3-dev",&#x000A;      deps: deps ]&#x000A;  end&#x000A;&#x000A;  # Configuration for the OTP application&#x000A;  def application do&#x000A;    [mod: { ModulesExample, [] }]&#x000A;  end&#x000A;&#x000A;  # Returns the list of dependencies in the format:&#x000A;  # { :foobar, git: "https://github.com/elixir-lang/foobar.git", tag: "0.1" }&#x000A;  #&#x000A;  # To specify particular versions, regardless of the tag, do:&#x000A;  # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }&#x000A;  defp deps do&#x000A;    []&#x000A;  end&#x000A;end</code></pre>
+    <aside class='notes'>
+      <p>I just wanted to show you a mixfile for now, let&#39;s go ahead and move on. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Defining a module</h2>
+    <pre class='fragment'><code>defmodule ModulesExample.Publisher do&#x000A;  def publish(message) do&#x000A;    message&#x000A;  end&#x000A;end</code></pre>
+    <aside class='notes'>
+      <p>Now we open up the file <code>lib/modules_example/publisher.ex</code> and make it look like the
+      following: [advance]</p>
+      
+      <blockquote>
+      <p>open up the project in vim and actually add this file</p>
+      </blockquote>
+      
+      <p>Now we&#39;ll save the file, compile it, and see if we can&#39;t use the function. [advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Compiling a module</h2>
+    <p>You can get a file compiled and available in an `iex` session in two ways:</p>
+    <ul>
+      <li class='fragment'>Launch `iex` with the module as an argument</li>
+      <li class='fragment'>Use `elixirc` and launch iex from the dir with the beam</li>
+    </ul>
+    <aside class='notes'>
+      <p>There are two ways to get the file compiled and into an <code>iex</code> session. [advance]</p>
+      
+      <p>The first is to just launch <code>iex</code> with a module as an argument.  We&#39;ll do that
+      and verify that we can call this function.</p>
+      
+      <blockquote>
+      <p>open up an iex session with <code>iex lib/modules_example/publisher.ex</code>, then call
+      ModulesExample.Publisher.publish(&quot;foo&quot;)</p>
+      </blockquote>
+      
+      <p>(once that was successful, switch back to slides and [advance])</p>
+      
+      <p>The second way to compile the module is by using <code>elixirc</code>.  This ships with elixir,
+      and can be invoked by <code>elixirc lib/modules_example/publisher.ex</code>.  It will
+      generate a file named <code>Elixir.ModulesExample.Publisher.beam</code> in the current
+      directory.  If you launch <code>iex</code> from that directory, the module will also be
+      available to you.</p>
+      
+      <blockquote>
+      <p>Go ahead and compile it with elixirc and launch iex with no arguments, then
+      call ModulesExample.Publisher.publish(&quot;foo&quot;)</p>
+      </blockquote>
+      
+      <p>[advance]</p>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Module definitions have return values</h2>
+    <pre class='fragment'><code>{:module, Foo,&#x000A; <<70, 79, 82, 49, 0, 0, 7, 24, 66, 69, 65, 77, 65, 116, 111, 109, 0, 0, 0, 102,&#x000A;0, 0, 0, 11, 10, 69, 108, 105, 120, 105, 114, 46, 70, 111, 111, 8, 95, 95, 105,&#x000A;110, 102, 111, 95, 95, 4, 100, 111, 99, 115, 9, ...>>,&#x000A; {:bar, 0}}&#x000A;</code></pre>
+    <aside class='notes'>
+      <p>In Elixir, you can also just define a module directly inside the REPL.  For
+      someone that&#39;s coming from Erlang, this will be a bit surprising.  There&#39;s a
+      really interesting feature that comes out of defining a module.  To see what&#39;s
+      happening, we&#39;ll define one in iex.</p>
+      
+      <p>(Open up an iex and type the following)</p>
+      
+      <pre><code>output = defmodule Foo do&#x000A;  def bar do&#x000A;    &quot;whee&quot;&#x000A;  end&#x000A;end&#x000A;</code></pre>
+      
+      <p>You&#39;ll notice that <code>defmodule</code> returns a tuple.  It actually has a really neat
+      structure. [Go back to slides, and advance]</p>
+      
+      <p>The tuple contains, in the following order:</p>
+      
+      <ul>
+      <li>An atom, <code>:module</code></li>
+      <li>The constant representing the module: <code>Foo</code></li>
+      <li>A binary containing the bytecode defining the module.  This is extremely
+      interesting, as it can be used to (for instance) shove this module over
+      into another node and load it over the network without that node ever having
+      had the source code available to it.</li>
+      <li>A tuple describing the last function defined in that module.  This is actually
+      just because the last item in the module definition return value tuple is just
+      the return value of the last executed expression in the module.  This happens
+      to be the return value of defining a function, which is itself a tuple containing
+      the function name and arity.</li>
+      </ul>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Documenting a module</h2>
+    <ul>
+      <li>Module and Function Documentation are first-class</li>
+      <li>Use module attributes (beginning with @) to define them</li>
+      <li class='fragment'>Acces a module's docs using the `h` helper in `iex`</li>
+    </ul>
+    <aside class='notes'>
+      <p>Elixir supports module and function documentation as first-class constructs.
+      They can be defined with the help of things known as module attributes.  These
+      begin with an <code>@</code> within a module.</p>
+      
+      <p>Let&#39;s open up the <code>ModulesExample.Publisher</code> module from before and add documentation
+      to it. This is achieved by using the <code>@moduledoc</code> and <code>@doc</code> attributes.  You pass them
+      a heredoc, and it may contain markdown formatting.</p>
+      
+      <p>(switch to a vim session, and add the following)</p>
+      
+      <pre><code># in lib/modules_example/publisher.ex&#x000A;defmodule ModulesExample.Publisher do&#x000A;  @moduledoc &quot;&quot;&quot;&#x000A;    A module used for training in [ElixirSips](http://www.elixirsips.com).&#x000A;  &quot;&quot;&quot;&#x000A;&#x000A;  @doc &quot;&quot;&quot;&#x000A;    Returns the message it is provided.  This is *extremely* valuable!&#x000A;  &quot;&quot;&quot;&#x000A;  def publish(message) do&#x000A;    message&#x000A;  end&#x000A;end&#x000A;</code></pre>
+      
+      <p>[advance]</p>
+      
+      <p>You can access a module&#39;s documentation using the <code>h</code> helper in <code>iex</code>.  To see
+      this in action, we&#39;ll launch iex with <code>iex lib/modules_example/publisher.ex</code></p>
+      
+      <p>(switch to iex)</p>
+      
+      <pre><code>h(ModulesExample.Publisher)&#x000A;# So that&#39;s the module&#39;s moduledoc.  Let&#39;s see a function&#39;s doc&#x000A;h(ModulesExample.Publisher.publish)&#x000A;</code></pre>
+    </aside>
+  </section>
+  <section>
+    <h1>Mix and Modules</h1>
+    <h2>Documenting a module (cont)</h2>
+    <ul>
+      <li>Generate docs as html with ExDoc</li>
+    </ul>
+    <aside class='notes'>
+      <p>So that&#39;s one way of looking at documentation - it&#39;s very convenient to have
+      access to documentation directly from your REPL, and it&#39;s a great feature of the
+      language.</p>
+      
+      <p>You can also generate documentation as html (which makes the markdown
+      support...useful).  To generate documentation for this module, you&#39;ll use ExDoc
+      by way of <code>mix</code>.</p>
+      
+      <p>We need to add ExDoc as a dependency for our project, so <code>mix</code> can install it
+      for us.  We&#39;ll open up mix.exs and add the dependency:</p>
+      
+      <p>(open up mix.exs in vim)</p>
+      
+      <pre><code>defmodule ModulesExample.Mixfile do&#x000A;  ...&#x000A;  defp deps do&#x000A;    [&#x000A;      { :ex_doc, github: &quot;elixir-lang/ex_doc&quot; }&#x000A;    ]&#x000A;  end&#x000A;end&#x000A;</code></pre>
+      
+      <p>Now get mix to install our dependencies, then we&#39;ll generate the documentation:</p>
+      
+      <p>(in a shell)</p>
+      
+      <pre><code>mix deps.get&#x000A;mix docs&#x000A;</code></pre>
+      
+      <p>And that&#39;s it, nice documentation output for your modules! (open up in the browser)</p>
+      
+      <p>[advance to the right]</p>
+    </aside>
+  </section>
+</section>
+<section>
+  <h1>Basic Elixir</h1>
+  <h2>Summary</h2>
+  <ul>
+    <li>Data Types</li>
+    <li>Pattern Matching</li>
+    <li>Functions</li>
+    <li>Mix and Modules</li>
+  </ul>
+  <aside class='notes'>
+    <p>Alright, so that&#39;s covered the four main parts of Basic Elixir: Data Types, Pattern
+    Matching, Functions, and Mix and Modules.  From here, you have a basic understanding
+    of what developing in Elixir looks like from a syntax and tooling perspective.  Let&#39;s
+    take a five minute break, and then we&#39;ll move on to covering testing.</p>
+  </aside>
+</section>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
