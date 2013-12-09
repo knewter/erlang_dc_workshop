@@ -4,6 +4,10 @@ title: Elixir Bootcamp
 
 # Elixir Bootcamp
 
+These are the slide decks I used for a 3 hour "Elixir Bootcamp" at ErlangDC.
+Each of these slides has speaker notes, accessibly by hitting 's'.  They are
+implemented using reveal.js.
+
 ## Introduction to Elixir
 - [Basic Elixir](http://knewter.github.io/erlang_dc_workshop/deck/introduction_to_elixir/basic_elixir/slides/) - 25 minutes
 - [Testing](http://knewter.github.io/erlang_dc_workshop/deck/introduction_to_elixir/testing/slides/) - 20 minutes
